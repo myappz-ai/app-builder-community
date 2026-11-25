@@ -123,14 +123,14 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) and [LICENSE](LICENSE). No passwords, tok
 <!-- file: docs/00-start-here.md -->
 # 00. Start here: from a new AI account to your first app
 
-This page assumes nothing. You have a fresh Claude (or ChatGPT) account and access to a workspace on your platform. By the end you have a project that knows this whole playbook and can build, fix and publish micro apps.
+This page assumes nothing. You have a fresh Claude (or ChatGPT) account and access to a sub-account on your platform. By the end you have a project that knows this whole playbook and can build, fix and publish micro apps.
 
 ## What you need before you start
 
 | Need | Why | Where to get it |
 |---|---|---|
-| A login to your app platform with access to the workspace the app will live in | The app, its data and its connections live in one workspace | Your agency or super admin |
-| Owner or admin role in that workspace | Publishing, approving data reads and connecting apps need it | Ask the account owner |
+| A login to your app platform with access to the sub-account the app will live in | The app, its data and its connections live in one sub-account | Your agency or super admin |
+| Owner or admin role in that sub-account | Publishing, approving data reads and connecting apps need it | Ask the account owner |
 | A Claude Pro/Team/Enterprise account (or ChatGPT with Projects) | Projects, files and connectors | claude.ai |
 | The **app builder connector** URL for your account | Lets the AI read and edit app code, check it, preview and publish | Your platform team (see 02-connectors) |
 | Optional: the Claude desktop app | Lets the AI use a browser on your computer (sign-in pages, Meta Business Settings) | claude.ai/download |
@@ -140,7 +140,7 @@ This page assumes nothing. You have a fresh Claude (or ChatGPT) account and acce
 1. In Claude, open **Projects** and click **New project**.
 2. Name it after the app or the work, for example `Micro apps` or `Ads Hub`.
 3. Upload **`PLAYBOOK.md`** to the project's knowledge. This one file is the whole playbook.
-4. Open the project's **custom instructions** and paste everything in `templates/project-instructions.md`. Fill the lines marked `EDIT ME` (your name, your workspace, your link domains).
+4. Open the project's **custom instructions** and paste everything in `templates/project-instructions.md`. Fill the lines marked `EDIT ME` (your name, your sub-account, your link domains).
 5. Optional but recommended: upload your **platform add-on** file (see `01-platform-and-stack.md`, last section) so the AI knows your platform's own tool names and settings.
 
 ## Step 2. Add the connectors
@@ -148,13 +148,13 @@ This page assumes nothing. You have a fresh Claude (or ChatGPT) account and acce
 Go to **Settings, Connectors** and add the ones in `docs/02-connectors.md`. At minimum:
 
 - **App builder connector** (essential): reads and edits app code, compiles, takes pictures, publishes.
-- **Your workspace connector**: reads the account's data and integration status, and runs Connector Hub actions (Meta, Slack, Gmail and more).
+- **Your sub-account connector**: reads the account's data and integration status, and runs Connector Hub actions (Meta, Slack, Gmail and more).
 
 Sign in to each one when Claude asks. Then, in a chat, ask:
 
-> List my connectors and tell me which workspace each one points to.
+> List my connectors and tell me which sub-account each one points to.
 
-This matters. Two connectors can have similar names and point at different workspaces. The check is in `docs/02-connectors.md`, section "Find out where a connector points".
+This matters. Two connectors can have similar names and point at different sub-accounts. The check is in `docs/02-connectors.md`, section "Find out where a connector points".
 
 ## Step 3. Start the first chat
 
@@ -200,19 +200,19 @@ This playbook works on any **AI-friendly app builder**: a platform where an AI a
 
 ```
 Platform
-  └── Workspace  = ONE business: its own contacts, deals, payments, forms,
-        │          staff, brand, domain and connections
+  └── Sub-account  = ONE business: its own contacts, deals, payments, forms,
+        │            staff, brand, domain and connections
         └── Apps
-              ├── App data           the app's own store (collections)
-              ├── App users          the app's own sign-in
-              ├── Forms              leads into the workspace's real forms and CRM
-              ├── Workspace data     live, read-only data of the business
-              ├── Platform actions   book, add a contact, send a template, publish a page...
-              └── Connector Hub      outside apps (ads, chat, email, files, payments...)
+              ├── App data            the app's own store (collections)
+              ├── App users           the app's own sign-in
+              ├── Forms               leads into the sub-account's real forms and CRM
+              ├── Sub-account data    live, read-only data of the business
+              ├── Platform actions    book, add a contact, send a template, publish a page...
+              └── Connector Hub       outside apps (ads, chat, email, files, payments...)
 ```
 
-- A **workspace is one business**. An app always works for one workspace, with only its data. Never mix workspaces.
-- People in a workspace: owner, admin, staff. An app also has its **own** users, separate from workspace users.
+- A **sub-account is one business**. An app always works for one sub-account, with only its data. Never mix sub-accounts.
+- People in a sub-account: owner, admin, staff. An app also has its **own** users, separate from sub-account users.
 
 ## Three kinds of link
 
@@ -248,9 +248,9 @@ Code samples in this playbook use this neutral pseudo-API. Map each line to your
 | Pseudo-API | What it does |
 |---|---|
 | `app.db.collection(name)` | The app's own store: insert, list, get, update, remove |
-| `app.forms.submit(formId, answers)` | Sends a lead into the workspace's forms and CRM |
+| `app.forms.submit(formId, answers)` | Sends a lead into the sub-account's forms and CRM |
 | `app.auth.signUp / signIn / signOut / user()` | The app's own users |
-| `useWorkspaceQuery(spec)` / `app.workspace.query(spec)` | Live, read-only workspace data (payments, form entries, contacts, staff...) |
+| `useSubAccountQuery(spec)` / `app.subAccount.query(spec)` | Live, read-only sub-account data (payments, form entries, contacts, staff...) |
 | `app.platform.run(action, args)` | A platform action (book, add contact, send template...) |
 | `hub.read(action, args)` / `hub.change(action, args)` | A Connector Hub read or change in an outside app |
 | `app.track(event)` | Analytics |
@@ -272,7 +272,7 @@ Keep one private file, for example `platforms/<your-platform>.md`, that lists:
 
 - your domains for preview and live links;
 - the real names of the builder tools (note the request, read files, edit, check, preview screenshot, hand over, publish, version history);
-- the real names of the data calls (workspace data, app data, forms, platform actions, Connector Hub read and change, start a connection, connection status);
+- the real names of the data calls (sub-account data, app data, forms, platform actions, Connector Hub read and change, start a connection, connection status);
 - where settings live (name, description, variables, secrets, permissions, domains, approvals).
 
 Upload it to the same AI project as `PLAYBOOK.md`. The public playbook stays the same for everyone; the add-on teaches the AI your platform's words.
@@ -287,9 +287,9 @@ Three different kinds of connection are involved. Mixing them up is the most com
 
 | Layer | Lives in | Used by | Examples |
 |---|---|---|---|
-| **AI connectors (MCP)** | Your AI account (Settings, Connectors) | The AI, while building | App builder connector, workspace connector, provider MCPs (ads, docs, GitHub), email, chat |
-| **Platform integrations** | The workspace's settings | The platform and apps | Payment gateway, video meetings, email sending, WhatsApp Business, social pages, AI models |
-| **Connector Hub** | The workspace's settings | Apps and the AI | Ads accounts, Slack, Gmail, Google Drive, Stripe, GitHub, CRMs... |
+| **AI connectors (MCP)** | Your AI account (Settings, Connectors) | The AI, while building | App builder connector, sub-account connector, provider MCPs (ads, docs, GitHub), email, chat |
+| **Platform integrations** | The sub-account's settings | The platform and apps | Payment gateway, video meetings, email sending, WhatsApp Business, social pages, AI models |
+| **Connector Hub** | The sub-account's settings | Apps and the AI | Ads accounts, Slack, Gmail, Google Drive, Stripe, GitHub, CRMs... |
 
 > Naming rule: always call it the **Connector Hub**. Some tool names and tool answers carry the name of the company behind a hub; never repeat that name to anyone. Say "Connect Meta", not "connect to <vendor>".
 
@@ -300,7 +300,7 @@ How an app integration should be done (Connector Hub, direct API or MCP) is in `
 | Connector | Needed for | Priority |
 |---|---|---|
 | **App builder connector** | List apps, read and edit files, build check, preview screenshot, versions, variables, publish | Essential |
-| **Workspace connector** (one per workspace) | Integration status, Connector Hub connections and reads, workspace data (payments, forms, contacts) | Essential |
+| **Sub-account connector** (one per sub-account) | Integration status, Connector Hub connections and reads, sub-account data (payments, forms, contacts) | Essential |
 | **Connector Hub manager** | Managing hub connections (list, add, set default) | Useful |
 | Provider MCPs (ads platforms, developer tools) | Direct reads and diagnostics while building | Optional |
 | Email, files, calendar, chat | General work around the project | Optional |
@@ -311,11 +311,11 @@ Add each in your AI account's connector settings with the server URL your platfo
 
 Connector names are chosen by people and can mislead. Before trusting one:
 
-1. Ask it for the workspace's **integration status**. The links in the answer contain the workspace id and domain. That is the workspace it reads.
-2. Ask it to **list Connector Hub connections**. "No key" means that workspace has no hub set up, so no outside apps can run there.
-3. Compare with the app's workspace (shown in the app builder).
+1. Ask it for the sub-account's **integration status**. The links in the answer contain the sub-account id and domain. That is the sub-account it reads.
+2. Ask it to **list Connector Hub connections**. "No key" means that sub-account has no hub set up, so no outside apps can run there.
+3. Compare with the app's sub-account (shown in the app builder).
 
-Real example: a connector named after one business pointed at a different workspace with no hub key, while a connector with a generic name was the app's real workspace. Rename connectors so the name matches where they point.
+Real example: a connector named after one business pointed at a different sub-account with no hub key, while a connector with a generic name was the app's real sub-account. Rename connectors so the name matches where they point.
 
 ## Connector check (start of every new chat)
 
@@ -334,7 +334,7 @@ One hub app (for example an ads account) can hold several connections. Usually *
 ## When a check fails
 
 - "Hub not reachable" on a status check: usually a one-off. Check again before assuming anything is broken.
-- "No key": set up the Connector Hub in that workspace's settings, or use the connector for the right workspace.
+- "No key": set up the Connector Hub in that sub-account's settings, or use the connector for the right sub-account.
 - Ads "login has expired" or OAuth error 190: the token expired. Follow `07-meta-token-runbook.md`.
 - "Rate limited" or "too many requests": wait a minute; never retry in a loop.
 
@@ -379,7 +379,7 @@ Good builders refuse changes until the request is noted for that app in this rou
 Short, plain words. In this order:
 
 1. What now works (screens, saved data, forms).
-2. Which workspace data it reads.
+2. Which sub-account data it reads.
 3. Anything invented as a placeholder.
 4. What is still open, and what the owner must do (approve a query, connect an app, publish).
 
@@ -390,7 +390,7 @@ Template: `templates/handover-template.md`.
 - Publish **only when the user asks** in this conversation, never because work is finished.
 - **live status** says what is live and whether there are unpublished changes.
 - **publish** **without** confirm shows a preview (nothing changes). Show it, get a yes, then **publish** again with confirm.
-- If the answer says workspace data needs approval, nothing went live: the owner approves the listed queries in the app builder's Publish screen, then you publish again.
+- If the answer says sub-account data needs approval, nothing went live: the owner approves the listed queries in the app builder's Publish screen, then you publish again.
 - After publishing, open the live link and confirm the change is there.
 
 ## Rollback
@@ -417,7 +417,7 @@ The person asking is usually a business owner, not a developer. They describe an
 
 - From the request, list the jobs the app must do.
 - For each job, search the platform's actions in plain words (**search platform actions**). Note what the platform already does.
-- If the app shows the business's own numbers, look at the real data now: **list workspace data** (module), **describe a data object** (object fields, real values), **query workspace data** (one real answer).
+- If the app shows the business's own numbers, look at the real data now: **list sub-account data** (module), **describe a data object** (object fields, real values), **query sub-account data** (one real answer).
 
 ## Step 2. Plan the product
 
@@ -451,7 +451,7 @@ Walk the checklist item by item. Each item is: done with a platform module, done
 |---|---|
 | Does the app open on a public page or the login? | **Login screen**, for any app with accounts |
 | Default date range on dashboards | **Today** |
-| Timezone for date boundaries | **The workspace's own timezone** (IST for Indian tenants), so numbers match the platform's dashboards |
+| Timezone for date boundaries | **The sub-account's own timezone** (IST for Indian tenants), so numbers match the platform's dashboards |
 | Where do settings the owner may change live? | Public variables, with a fallback in code |
 | Outside services (Meta, Gmail, Slack) | Connector Hub through a **Connector Hub read**, connected or not; show a not-connected message until it is |
 | The platform's built-in ads module | Only when the user explicitly asks for it |
@@ -469,17 +469,17 @@ An app has five data sources. Pick the right one for each feature.
 
 | Source | Read/write | Use for | Call |
 |---|---|---|---|
-| **Workspace data** | Read only, live | The business's real payments, form entries, contacts, deals, staff, Zoom attendance | `useWorkspaceQuery(spec)` |
+| **Sub-account data** | Read only, live | The business's real payments, form entries, contacts, deals, staff, Zoom attendance | `useSubAccountQuery(spec)` |
 | **App data** | Read and write | What people type into the app: calling lists, notes, uploads, saved settings, caches | `app.db.collection(name)` |
-| **Forms** | Write | Leads that must land in the workspace's forms and CRM | `app.forms.submit(formId, answers)` |
+| **Forms** | Write | Leads that must land in the sub-account's forms and CRM | `app.forms.submit(formId, answers)` |
 | **Platform actions** | Read and write | Bookings, contacts, templates, sites, payment links, integration status | `app.platform.run(action, args)` |
 | **Outside apps (Connector Hub)** | Read and write | Meta Ads, Slack, Gmail, Google Drive... | a **Connector Hub read** / a **Connector Hub change** |
 
-## Workspace data (`useWorkspaceQuery`)
+## Sub-account data (`useSubAccountQuery`)
 
 ### Look first
 
-Never guess an object or field name. While building: **list workspace data** → **describe a data object** → **query workspace data**. Use the exact names and values you saw. A wrong name answers "did you mean...": use the suggestion.
+Never guess an object or field name. While building: **list sub-account data** → **describe a data object** → **query sub-account data**. Use the exact names and values you saw. A wrong name answers "did you mean...": use the suggestion.
 
 ### The spec
 
@@ -491,7 +491,7 @@ Never guess an object or field name. While building: **list workspace data** →
 
 - `filters`: `{ field: value }` or `{ field: { gt | gte | lt | lte | neq | in | contains | is } }`.
 - `group_by` / `time_grain` for charts; `count_only` or a `metric` for number cards; small `limit` (10 to 25) for tables.
-- `period` presets (`today`, `yesterday`, `last_7_days`, `last_30_days`, `this_month`, `last_month`, `this_year`) use the **workspace's timezone**.
+- `period` presets (`today`, `yesterday`, `last_7_days`, `last_30_days`, `this_month`, `last_month`, `this_year`) use the **sub-account's timezone**.
 - Sorting key is `dir`, never `direction`.
 - **Money comes per currency** (`{ "INR": 250000 }`). Show each currency on its own, never add two together.
 
@@ -506,11 +506,11 @@ A published app runs only queries the owner approved. The **shape** of every spe
 
 ### Calm screens
 
-- One `useWorkspaceQuery` per block, so one slow read never blocks the others.
+- One `useSubAccountQuery` per block, so one slow read never blocks the others.
 - Skeleton only while `isLoading`; small "Updating..." while `isRefreshing`.
 - On error show `error.message` with Retry, keep the last numbers. `NOT_APPROVED` and `UNPUBLISHED`: show the message, no Retry.
-- Live updates without polling: `useWorkspaceQuery(spec, { live: ["payment.paid"] })`. Signals available: `booking.created`, `booking.cancelled`, `form.submitted`, `payment.paid`, `contact.created`.
-- Workspace data answers only for a signed-in member of the workspace. A public visitor gets a clear message, never fake numbers.
+- Live updates without polling: `useSubAccountQuery(spec, { live: ["payment.paid"] })`. Signals available: `booking.created`, `booking.cancelled`, `form.submitted`, `payment.paid`, `contact.created`.
+- Sub-account data answers only for a signed-in member of the sub-account. A public visitor gets a clear message, never fake numbers.
 
 ## App data (`app.db`)
 
@@ -560,10 +560,10 @@ await hub.change("<exact action name>", { channel, text }, { summary: "Post toda
 | Feature | Source |
 |---|---|
 | Ad spend, leads, purchases, creatives, campaigns, account log | Connector Hub, Meta Ads |
-| Money received, per day and product | Workspace data, `revenue_received` metric |
-| Event registrations | Workspace data, `form_submissions` |
-| Callers | Workspace data, `staff_members` |
-| Zoom attendance sync | Workspace data, `zoom_attendance` |
+| Money received, per day and product | Sub-account data, `revenue_received` metric |
+| Event registrations | Sub-account data, `form_submissions` |
+| Callers | Sub-account data, `staff_members` |
+| Zoom attendance sync | Sub-account data, `zoom_attendance` |
 | Calling list, call log, uploaded Zoom reports, screen cache | App data collections |
 | Connector status | Platform actions **integration status**, **list Connector Hub connections** |
 | Share to Slack | Connector Hub, a **Connector Hub change** |
