@@ -1372,6 +1372,115 @@ Every problem met while building and running Ads Hub, with its cause and fix.
 
 ---
 
+<!-- file: docs/18-case-study-ads-hub.md -->
+# 18. Case study: Ads Hub, end to end
+
+Ads Hub is a live dashboard for a business running Meta ads for two projects: a **seasonal event** (free registrations, a small paid upgrade, webinars) and a **subscription product** (workshops and plan sales). Names, numbers and brands are generalised; the lessons are real. It joins ad spend, leads, payments, webinar attendance and a team calling list in one place.
+
+Identifiers below are placeholders. Real values belong in the app's variables and a private handover note, never in this repository.
+
+## 1. The brief, as given
+
+"One place for our ads, webinars, calls and sales. Live Meta numbers, money received, who registered, who attended, who to call next. Opens on today. Works on my phone."
+
+## 2. What was decided (product plan)
+
+| Decision | Why |
+|---|---|
+| Staff-only app with its own login, opening on the sign-in screen | Ad numbers and buyer lists are internal |
+| Meta through Connector Hub, not the platform's built-in ads module | Outside apps are the default; built-in ads module only on explicit request |
+| Payments, form entries, staff, Zoom attendance from workspace data | They already live in the platform's modules |
+| Calling list, call log, uploaded Zoom reports, screen cache in app data | Nothing in the platform covers them |
+| Date range opens on **Today** | The team checks the day's numbers first |
+| One project shown at a time; campaigns of other businesses hidden | The ad account is shared |
+| Older history from a one-time export | Some history (pixels, older attribution) is not available live |
+
+## 3. Pages
+
+**Performance**
+- **Overview:** event live block (registrations, upgrade money, upgrade buyers ≈ money ÷ price, ad spend per registration); KPIs (ad spend, results, cost per result, link clicks, money received, ROAS, leads, active campaigns); spend and results chart; top campaigns; "what needs attention"; spend by offer; click-to-sale funnel.
+- **Sales:** successful payments per project, by day and by product, net of GST, ROAS, payments table.
+- **Event** (three tabs): Event so far; Webinar sessions (from uploaded Zoom reports tagged to the event: attended, average minutes, 30+ and 60+, bought); Buyers and sources (registrations by UTM source, latest 50 buyers with phones masked, latest 50 registrations).
+- **Prospects:** Calling list (pick "I am", statuses Not called yet, Spoke: interested, Spoke: call back later, Did not answer, Not interested, Wrong or no number, Paid; every change logged and credited); Zoom attendees (upload or pull, filters, add filtered people to the calling list); Performance per caller.
+
+**Ads**
+- **Creatives:** every ad that spent, 3 per row, picture, headline, text, spend, results, cost per result, CTR, Ads Manager link, sort and search, cached cards.
+- **Campaigns:** running now, spend, per result, by day; table filters Running now / With spend / All; tap a row for day by day.
+- **Daily log:** one row per day; Copy for WhatsApp.
+
+**Setup**
+- **Account log:** Meta's change and billing history (7, 30 or 90 days, 20 per page, Load more), money converted from the smallest unit.
+- **Connectors:** only what the app uses (Payment gateway, Zoom, Meta Ads, Slack), the workspace data it reads with live counts, a Zoom staleness warning, Share to Slack.
+
+**Header on every page:** project tag, date range (Today by default), sync status and Sync now, dark mode.
+
+## 4. Files
+
+```
+src/App.tsx                    providers, hash routes, redirects for merged pages
+src/components/AppShell.tsx    sidebar navigation, header, date picker, refresh bar
+src/components/AuthGate.tsx    login gate, reset/forgot, BRAND (name, tagline)
+src/blocks/custom/signin-split.tsx  ejected split sign-in screen
+src/components/Preloader.tsx   branded loading screen
+src/components/SyncButton.tsx  "Synced 3:21 pm", popover with last/next sync
+src/components/LivePanel.tsx   sync notes, Meta-expired note, AdsGate wrapper
+src/components/ConnectorAlerts.tsx, ConnectionList.tsx   connector banner and list
+src/components/ZoomAttendees.tsx   Zoom upload, pull, filters, add to calling list
+src/components/DataTable.tsx   search, sort, CSV export
+src/components/{Charts,Kpi,Section,States,DateRangePicker,BfLive}.tsx
+src/lib/metaDirect.ts          every Meta read (insights, campaigns, ad looks, activities)
+src/lib/liveAds.tsx            live ads provider, 15-minute auto sync, project split, revenue
+src/lib/connectorHealth.tsx    Platform integrations + Connector Hub status, only the used connectors
+src/lib/cache.ts               3-layer stale-while-revalidate cache
+src/lib/filters.tsx            presets, Today default, refresh key
+src/lib/fmt.ts                 money, numbers, dates, CSV download, copy
+src/lib/zoom.ts                Zoom CSV parser, sync puller, storage, payers, sample
+src/lib/snapshot.ts, src/data/snapA|B|C.ts   one-time export for older history
+src/pages/*.tsx                Overview, Sales, BlackFriday, Prospects, Creatives,
+                               Campaigns, Daily, AccountLog, Connectors
+src/index.css                  theme tokens (signature preset, plum and gold)
+```
+
+## 5. App data collections
+
+| Collection | Access | Holds |
+|---|---|---|
+| `prospects` | public | The calling list |
+| `call_log` | public | Every status change, who and when |
+| `zoom_sessions` | public | One document per session part, attendees as compact arrays, 250 per part |
+| `screen_cache` | owner | Each person's last Meta answers, so screens paint at once |
+
+## 6. Variables
+
+`META_AD_ACCOUNT_ID`, `META_BUSINESS_ID`, `APP_STORE_URL`. No secrets in the app.
+
+## 7. How it was built, in order
+
+1. **Connector check:** the app builder live, Connector Hub Meta Ads active, platform integrations, a direct Meta read for today.
+2. **Looked at the real data:** payments (product names), form submissions (form name), staff, Zoom attendance; Meta campaign names to design the project split.
+3. **Plan and checklist** written into the app's request note.
+4. **Backend first:** collections defined; account-data specs written as fixed consts; Meta reader built and proven with one real read per action.
+5. **Shell:** providers (filters, connector health, live ads), sidebar, header, date picker defaulting to Today, sync button.
+6. **Pages one by one**, each with its four states, each on data that already worked.
+7. **Hard problems solved along the way:** doubled leads (largest, not sum), missing spend days (two-pass merge), slow long ranges (7-day windows, 3 at a time, shrinking pages), UTC filter dropping early-morning payments (removed; account timezone), downloads blocked by the sandbox (new-window data URL plus Copy), Meta token expiring every 60 days (system user token that never expires).
+8. **Merged thin pages** (Event and Webinars into one Event page; Live Now into Campaigns) with redirects for old links.
+9. **Connectors page trimmed** to only what the app uses, with "Connector Hub" wording.
+10. **Pictures at the end**, desktop and phone; design issues fixed.
+11. **Published**, queries approved by the owner.
+12. **Handover** written so another AI account could continue with nothing lost.
+13. **Rebrand to Ads Hub:** in-app name, logo mark, sign-in tagline made global, the app builder name and description, share image, logo canvas.
+
+## 8. Open items at the time of writing
+
+- Platform: server-side OG tags and a share image setting (WhatsApp previews).
+- Custom domain answering 403 although marked verified.
+- Zoom platform sync stopped; uploads used meanwhile.
+- A real user to confirm CSV downloads save a file.
+- Money in one currency with Indian formatting and GST; a global version needs per-account currency, locale and tax settings, and configurable projects and campaign rules instead of fixed names.
+
+
+---
+
 <!-- file: docs/19-prompts.md -->
 # 19. Prompts
 
@@ -1471,6 +1580,245 @@ Write a complete handover for <app> following templates/handover-template.md: id
 connectors and their status, structure, data flow, rules, open items, key numbers for sanity
 checks, and a starter prompt. No secrets.
 ```
+
+
+---
+
+<!-- file: docs/20-one-prompt-to-app.md -->
+# 20. One prompt to a finished app
+
+The goal: a person writes one paragraph ("I want a family step tracker connected to our iPhones' Health app") and the AI works out everything else itself: which data sources exist, which connectors are needed, how to connect them, what to build, and what each user must do once. The person only answers a question when a wrong guess would break the app, signs in where a provider asks, and approves.
+
+**Wording rule:** the place where outside apps are connected is the **Connector Hub** (in the workspace's settings). Users never see the name of the company behind it. Tool answers may mention that vendor name; never repeat it.
+
+---
+
+## The pipeline
+
+```
+1. Read the brief        people, data, actions, devices, privacy
+2. Discover              platform actions, Connector Hub actions, connection status
+3. Classify each source  connected / connectable / device-only / none
+4. Plan                  feature checklist + connection plan, shown before building
+5. Connect               sign-in link per app, person signs in, status confirmed, one real read
+6. Build                 backend first, then screens (docs 03 to 15)
+7. Verify                every journey, every device, numbers against the source
+8. Hand over             what works, setup each user does once, approvals, gaps
+```
+
+### 1. Read the brief
+
+Write down, from the brief alone:
+
+| Question | Family step tracker example |
+|---|---|
+| Who uses it, and do they sign in? | Every family member, each with their own login |
+| What data comes in, from where? | Daily steps, from each person's iPhone Health app |
+| What do people do in the app? | See their own steps, the family's totals, a weekly leaderboard, goals |
+| On which devices? | iPhones mostly, sometimes a laptop |
+| What is private? | Health data: each person's detail is theirs; only agreed totals are shared |
+| What must happen automatically? | Steps arrive daily without anyone typing them |
+
+### 2. Discover through connectors
+
+Run all of these before deciding anything:
+
+1. **Platform:** **search platform actions** with plain words for each job ("send a reminder", "create a group", "payment link").
+2. **Connector Hub, by need:** **search Connector Hub actions** with plain words for each outside data source ("read daily step count", "list workouts", "sleep score"). The answer lists actions of connected **and not-connected** apps, so it shows what is possible, not only what is on now.
+3. **Connector Hub, by name:** **search Connector Hub actions** with `app` set to likely providers (for health: fitbit, oura, garmin, withings, whoop, strava, google_fit). "No matching actions" means that provider is not in the hub.
+4. **Status:** **connection status** lists every connection of the account (platform integrations and Connector Hub) as connected, needs attention or not connected, each with a `connect_url`.
+5. **Workspace data:** **list workspace data** if the brief touches business data already in the platform.
+
+Never decide a source "can't be done" before these searches.
+
+### 3. Classify each source
+
+| Class | Meaning | What to do |
+|---|---|---|
+| **A. Connected** | Action exists and the app is connected | Prove it with one tiny read, then build |
+| **B. Connectable** | Action exists, app not connected yet | Connect it (step 5). Build with it anyway; until connected the app shows the not-connected text |
+| **C. Platform integration** | Meta pages, WhatsApp Business, SMTP, Zoom, Slack, payment gateways, Google Calendar | a **connect link** or **start a connection** gives the connect page |
+| **D. Device-only** | The data lives only on a phone with no online API (Apple Health, Android Health Connect, phone contacts, local files) | Use a **device bridge** (below) |
+| **E. Nothing exists** | No action, no API, no device route | Manual entry or CSV upload in the app, named as a gap |
+
+### 4. Plan, and show it before building
+
+Two tables, in plain words, in one message:
+
+- **Feature checklist** (`templates/feature-checklist.md`).
+- **Connection plan:** each source, its class, how it connects, who must do what, once.
+
+Ask at most one question, and only if the answer changes the build. Otherwise state the assumptions and continue.
+
+### 5. Connect
+
+For each source of class B or C:
+
+1. **start a connection** (for one app) **without** confirm: a preview of what will happen. Show it.
+2. On the person's yes: confirm it. Connector Hub apps return a **sign-in link** (the provider's page, then back); platform integrations return a **settings page** link.
+3. Give the person the link. **They** sign in on the provider's page. Never ask for a password, code or token in chat.
+4. **connection status** (for that app) until it shows connected.
+5. One tiny real read (a **Connector Hub read**) to prove it.
+6. Note it in the hand-over: which account was connected, by whom.
+
+Inside the app itself there is **never** a connect button or link of your own. When something is not connected, the app shows the kit's not-connected text (not-connected message), which tells people to ask the owner. Connecting is the owner's job, done through the steps above or in the workspace's Connector Hub settings.
+
+### 6 to 8. Build, verify, hand over
+
+Exactly as docs 03 to 15. The hand-over adds a **"Setup each person does once"** section when a device bridge is used.
+
+---
+
+## Device bridges: getting phone-only data in
+
+Some data never leaves the phone unless the phone sends it. The app can receive it in three ways, from most to least automatic:
+
+| Bridge | How | Good for |
+|---|---|---|
+| **Phone automation opens the app with the data** | An iOS Shortcut (or Android automation app) reads the value, then opens the app's link with the value in it. The signed-in app saves it. | Daily numbers: steps, sleep hours, weight |
+| **Export and upload** | The person exports a file (Apple Health export, CSV) and uploads it in the app; the app parses it | History, one-time imports |
+| **Manual entry** | A quick "Add today" form, one tap per value | Fallback, people without the automation |
+
+### Worked example: family step tracker on iPhone
+
+**Why a bridge:** Apple Health (HealthKit) data stays on the iPhone. There is no web API and no Connector Hub app for it, so no server can read it. The iPhone itself must send it. (Checked 25 Nov 2026: the Connector Hub had no Apple Health, Fitbit, Oura, Garmin, Withings, Whoop, Strava or Google Fit actions for this account. Search again before each build; the catalogue grows.)
+
+**The app**
+
+- Sign-in: every family member has their own login (WhatsApp code or email). Opens on the login screen.
+- Collections:
+  - `steps_daily` (**owner**): one row per person per day `{ date, steps, source, synced_at }`. Each person sees only their own detail.
+  - `families` (**public**): `{ name, invite_code, members: [{ user_id, display_name }] }`.
+  - `family_totals` (**public**): one row per person per day with only the shared number `{ family_id, user_id, display_name, date, steps }`, written by the app when a person syncs, and only if they turned "share my steps with family" on.
+- Screens: Today (my steps, goal ring), Week (my chart), Family (leaderboard and totals, this week), Settings (goal, share toggle, family invite code, "Set up iPhone sync").
+- **No duplicates:** a sync for a date that already has a row **updates** that row (upsert by person and date), never adds a second one. Steps for a day only go up during the day; keep the larger value if two syncs disagree.
+
+**The iPhone Shortcut (each person, once)**
+
+1. Shortcuts app, new shortcut "Sync steps to <app name>".
+2. Action **Find Health Samples**: type Steps, start date is today.
+3. Action **Calculate Statistics**: Sum of the Health Samples.
+4. Action **Open URLs**: `<live app link>#/sync?steps=<Statistics>&date=<Current Date, format yyyy-MM-dd>`.
+5. Automation tab, **Personal Automation**, Time of Day 9:00 PM daily, run the shortcut, **Run Immediately**.
+6. Run it once by hand; the app shows "Synced today, 9:00 PM, 8,412 steps".
+
+The app's Settings page shows these steps with the person's own link filled in, so nobody types a URL.
+
+**In the app code**
+
+- On load, after sign-in, read `#/sync?steps=&date=` from the hash, validate (whole number 0 to 100,000, a real date not in the future), upsert the row, write the family total if sharing is on, show a toast, then clear the hash so a reload does not save again.
+- If the person is signed out when the shortcut opens the link, keep the values, show the sign-in screen, save right after sign-in.
+
+**Test before rolling out:** confirm on one iPhone that the hash reaches the app on the live link and that the session survives in Safari. Note the result in the hand-over.
+
+**Honest limits to tell the family**
+
+- Data arrives once a day (or whenever the shortcut runs), not live.
+- iPhone only; Android needs Health Connect with an automation app, or manual entry.
+- **Privacy:** app collections have three access levels (owner, public, private). There is no "family-only" level yet, so anything in a public collection can be read by any signed-in user of the app. Keep detail in owner collections, share only agreed totals, and run **one app per family** if families must not see each other. A family-scoped access level is a platform gap to raise.
+- Health data is sensitive: ask before sharing anything, let people delete their data, never send it to other apps.
+
+---
+
+## The same pipeline, other briefs
+
+| Brief | Sources found through connectors | Class | Bridge or gap |
+|---|---|---|---|
+| "Team inbox for client emails with a weekly digest" | Gmail (Connector Hub), platform contacts | A or B | None |
+| "Post our blog to LinkedIn and Instagram" | LinkedIn, Instagram (Connector Hub) | A or B | Posting is a change: owner approves each action |
+| "Book site visits with WhatsApp reminders" | Calendar booking, WhatsApp template (platform) | Platform | Template approval by Meta |
+| "Track our Stripe revenue against ad spend" | Stripe, Meta Ads (Connector Hub) | A or B | Currencies shown separately |
+| "Kids' screen time across our phones" | None (phone-only) | D | Device bridge, or a gap |
+
+---
+
+## The one-prompt starter (paste with any brief)
+
+```
+Build this app: <one paragraph brief>.
+
+Work from PLAYBOOK.md, doc 20 "One prompt to a finished app":
+read the brief, discover every source through the platform and the Connector Hub (search by need
+and by provider name, check connection status), classify each source, then show me the feature
+checklist and the connection plan in one message. Connect what is needed with sign-in links I
+open myself (never ask me for passwords, codes or tokens). Use a device bridge for phone-only
+data. Then build, verify on phone and desktop, and hand over with the setup each user does once.
+Ask me at most one question, only if a wrong guess would break the app.
+```
+
+
+---
+
+<!-- file: docs/21-integration-routes.md -->
+# 21. Integration routes: Connector Hub, direct API, MCP
+
+Every outside app an app talks to (ads, CRM, email, chat, payments, files, wearables) goes through one of three routes. **The Connector Hub is the default.** The other two exist for what the hub cannot do.
+
+## The three routes
+
+| Route | What it is | Who signs in | Where the credential lives | Use when |
+|---|---|---|---|---|
+| **1. Connector Hub** (default) | The workspace's hub holds one connection per outside app; apps call it for reads and changes | The owner, once, on the provider's own page (redirect and back) | Inside the hub, never visible to the app, the AI or chat | The provider is in the hub's catalogue |
+| **2. Direct API** | The app (on the server side) calls the provider's API itself | The owner, through the provider's OAuth page, or by creating a key | A **server-side secret**, never in browser code | The provider is not in the hub, or the hub lacks an endpoint you need |
+| **3. MCP server** | An AI-side connector to the provider (official MCP if one exists) | The person using the AI, in their AI account | In the AI account's connector settings | The **AI** needs the provider while building: reading docs, testing a call, checking an account, diagnosing |
+
+Route 3 is for building, not for the running app. A live app never depends on someone's AI session.
+
+## Route 1: Connector Hub, the redirect flow
+
+```
+Owner asks to connect  →  start a connection (preview, then confirm)
+        →  the hub returns a sign-in link for the provider
+        →  owner opens it, signs in ON THE PROVIDER'S PAGE, grants access
+        →  provider redirects back to the hub; the hub stores the connection
+        →  connection status shows "connected"
+        →  one tiny real read proves it
+```
+
+Rules:
+
+- **Redirect, never collect.** People sign in on the provider's page. Nobody types a password, code or key into chat, the app, or a form you built.
+- **Apps never show their own connect button or link.** When a hub app is not connected, the app shows a calm "not connected" message telling people to ask the owner. Connecting is the owner's job, in the workspace settings or through the flow above.
+- **Build with the hub action even before it is connected.** Search the hub's catalogue for the exact action and its fields, write the call, and let the not-connected message show until the owner connects.
+- **Reads run directly; changes need approval.** The owner approves each change action by name (send, post, update). Approving one never allows another. Apps never delete in outside apps.
+- **One default per provider.** Several connections of one provider: the newest is the default; old ones are removed by the owner.
+- **Rate limits are real.** Page results (20 rows or fewer), cache, never loop.
+
+## Route 2: Direct API
+
+Use only when the hub cannot do the job. Checklist:
+
+1. **Search the hub first** (by need and by provider name). Note in the plan why the hub is not enough.
+2. **Prefer OAuth** with the provider's own consent page (same redirect pattern as the hub). Use an API key only when the provider offers nothing else.
+3. **Credentials as server-side secrets**, added by the owner. Browser code never sees them. If your platform has no server-side code for apps yet, this route is a **platform gap**: say so and use route 1 or a device bridge instead.
+4. **Least privilege:** request only the scopes the features need (read-only when possible).
+5. **Token refresh:** store refresh tokens server-side; handle expiry with a clear "reconnect" message for the owner.
+6. **Webhooks in, not polling:** when the provider can push events, receive them on a server endpoint and verify the signature.
+7. **Same rules as the hub** for paging, rate limits, no deletes, approvals for changes, and the not-connected state.
+
+## Route 3: MCP for the AI
+
+- Add the provider's **official MCP server** (or a trusted one) to the AI account when building needs it: reading API docs, testing a query, listing accounts, checking a webhook.
+- Sign in through the MCP's own flow. Never paste keys into chat.
+- Anything the AI learns there becomes code that uses route 1 or 2. The live app never calls the AI's MCP.
+
+## Choosing a route
+
+| Question | Answer → route |
+|---|---|
+| Is the provider in the Connector Hub with the action you need? | Yes → **1** |
+| Not in the hub, has OAuth or keys, and your platform runs server-side code for apps? | Yes → **2** |
+| Not in the hub and no server-side code? | **Platform gap**; offer upload, manual entry or a device bridge |
+| Data only on a phone (Apple Health, Health Connect, phone contacts)? | **Device bridge** (`20-one-prompt-to-app.md`) |
+| The AI needs it only while building? | **3** |
+
+## Integration plan table (put it in every plan)
+
+| Provider | Data or action | Route | Connected? | Who connects, how | Approvals | Fallback if missing |
+|---|---|---|---|---|---|---|
+| Meta Ads | Spend, leads, creatives | 1 | Yes | Owner, hub sign-in | None (reads) | Not-connected message |
+| Slack | Post daily summary | 1 | Yes | Owner, hub sign-in | "Send message" approved | Copy text instead |
+| Apple Health | Daily steps | Device bridge | n/a | Each person, iPhone Shortcut once | None | Manual entry |
 
 
 ---
