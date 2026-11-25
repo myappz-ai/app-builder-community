@@ -441,6 +441,296 @@ Walk the checklist item by item. Each item is: done with a platform module, done
 
 ---
 
+<!-- file: docs/05-data-layer.md -->
+# 05. The data layer
+
+An app has five data sources. Pick the right one for each feature.
+
+| Source | Read/write | Use for | Call |
+|---|---|---|---|
+| **Workspace data** | Read only, live | The business's real payments, form entries, contacts, deals, staff, Zoom attendance | `useWorkspaceQuery(spec)` |
+| **App data** | Read and write | What people type into the app: calling lists, notes, uploads, saved settings, caches | `app.db.collection(name)` |
+| **Forms** | Write | Leads that must land in the workspace's forms and CRM | `app.forms.submit(formId, answers)` |
+| **Platform actions** | Read and write | Bookings, contacts, templates, sites, payment links, integration status | `app.platform.run(action, args)` |
+| **Outside apps (Connector Hub)** | Read and write | Meta Ads, Slack, Gmail, Google Drive... | a **Connector Hub read** / a **Connector Hub change** |
+
+## Workspace data (`useWorkspaceQuery`)
+
+### Look first
+
+Never guess an object or field name. While building: **list workspace data** → **describe a data object** → **query workspace data**. Use the exact names and values you saw. A wrong name answers "did you mean...": use the suggestion.
+
+### The spec
+
+```ts
+{ metric: "revenue_received", filters: { product_name: { in: PRODUCTS } }, time_grain: "day", period: "last_30_days", limit: 100 }
+{ object: "form_submissions", filters: { form_name: FORM }, count_only: true }
+{ object: "zoom_attendance", fields: ["join_time"], order: { field: "created_at", dir: "desc" }, limit: 1, period: "last_90_days" }
+```
+
+- `filters`: `{ field: value }` or `{ field: { gt | gte | lt | lte | neq | in | contains | is } }`.
+- `group_by` / `time_grain` for charts; `count_only` or a `metric` for number cards; small `limit` (10 to 25) for tables.
+- `period` presets (`today`, `yesterday`, `last_7_days`, `last_30_days`, `this_month`, `last_month`, `this_year`) use the **workspace's timezone**.
+- Sorting key is `dir`, never `direction`.
+- **Money comes per currency** (`{ "INR": 250000 }`). Show each currency on its own, never add two together.
+
+### Fixed shapes, so the app can be published
+
+A published app runs only queries the owner approved. The **shape** of every spec is fixed at build time (object or metric, fields, which filter fields, group_by, order field). **Values** may change at run time (a picked filter value, search text, limit, period preset, time_grain, cursor).
+
+- Right: specs as top-level `const`s, spread with a runtime `period`: `{ ...EVENT_REVENUE_DAILY, period }`.
+- Wrong: `{ object: picked }`, `group_by: [picked]`, `filters: { [picked]: x }`.
+- A custom date range (`{ from, to }`) cannot run in a published app. Use presets, then filter rows in the browser if needed (Ads Hub does this for custom ranges).
+- New shapes need the owner's approval in the app builder's Publish screen. Tell them when that happens.
+
+### Calm screens
+
+- One `useWorkspaceQuery` per block, so one slow read never blocks the others.
+- Skeleton only while `isLoading`; small "Updating..." while `isRefreshing`.
+- On error show `error.message` with Retry, keep the last numbers. `NOT_APPROVED` and `UNPUBLISHED`: show the message, no Retry.
+- Live updates without polling: `useWorkspaceQuery(spec, { live: ["payment.paid"] })`. Signals available: `booking.created`, `booking.cancelled`, `form.submitted`, `payment.paid`, `contact.created`.
+- Workspace data answers only for a signed-in member of the workspace. A public visitor gets a clear message, never fake numbers.
+
+## App data (`app.db`)
+
+1. **define the collection** (name and access) **before** code uses it. Access:
+   - `owner`: each person sees only their own rows (personal caches, bookings).
+   - `public`: everyone in the app reads (a shared calling list).
+   - `private`: builder side only.
+2. Confirm with an **app data query** that saving works.
+3. Keep documents small. For large lists, split into parts (Ads Hub stores Zoom attendees 250 per document as compact arrays).
+
+## Platform actions
+
+- Find with **search platform actions** in plain words; use only names it returned, written out in full.
+- A platform action always resolves to one of: `done`, `pending_approval` (show "Waiting for approval", never "sent"), `needs_choice` (let the person pick), `refused` (show the words).
+- Ask the person in the app first ("Book this slot?"), then run once per click. Never run twice to "confirm".
+- No timeouts of your own around platform calls; show loading and the platform's error.
+- Who can run: staff actions only for roles `admin` or `staff`; plain users only on their own rows.
+
+## Outside apps (Connector Hub)
+
+```ts
+// read (runs at once for staff)
+const r = await hub.read("<exact action name from the hub catalogue>", {
+  ad_account: AD_ACCOUNT, level: "campaign", date_preset: "today", fields: ["spend"],
+});
+// change (the owner approves each change action by name in the app's permissions)
+await hub.change("<exact action name>", { channel, text }, { summary: "Post today's ad summary to #growth" });
+```
+
+- Find exact action names and input fields while building (**search Connector Hub actions**). Never call the search from app code.
+- Write the action name out in full; never build it from a variable, and never call delete, remove or archive actions in outside apps.
+- Page big lists (20 rows or fewer per call), follow `next_cursor`, show a "Load more" button for long histories.
+- Read page 1 first and show it, fetch the rest in parallel, keep results in memory.
+- Not connected: show a calm not-connected message (ask the owner to connect it), no button, no link, no numbers.
+- `RATE_LIMITED`: show the words, never retry in a loop.
+- Every change is real, even in preview. Never run one to test.
+
+## Connecting an outside app
+
+- **Connection status** lists every connection (platform integrations and Connector Hub) with its status and a link to its settings card.
+- **Start a connection** (for one app): preview first, then confirm on the person's yes. Hub apps return a sign-in link (redirect to the provider and back); platform integrations return their settings page.
+- The person signs in on the provider's page. Then check the status again and run one tiny read.
+- Full flow: `21-integration-routes.md`. Device-only data: `20-one-prompt-to-app.md`.
+
+## Which source for which Ads Hub feature
+
+| Feature | Source |
+|---|---|
+| Ad spend, leads, purchases, creatives, campaigns, account log | Connector Hub, Meta Ads |
+| Money received, per day and product | Workspace data, `revenue_received` metric |
+| Event registrations | Workspace data, `form_submissions` |
+| Callers | Workspace data, `staff_members` |
+| Zoom attendance sync | Workspace data, `zoom_attendance` |
+| Calling list, call log, uploaded Zoom reports, screen cache | App data collections |
+| Connector status | Platform actions **integration status**, **list Connector Hub connections** |
+| Share to Slack | Connector Hub, a **Connector Hub change** |
+
+
+---
+
+<!-- file: docs/06-meta-ads-integration.md -->
+# 06. Meta Ads integration, done right
+
+Meta is the hardest data source in a marketing app: big answers, rate limits, overlapping action types, and tokens that expire. These are the rules Ads Hub learned.
+
+## Connection
+
+- Meta Ads is read through the **Connector Hub** (a **Connector Hub read**). The app uses whatever connection is the **default** (the newest).
+- Use a **system user token that never expires** (`07-meta-token-runbook.md`). Personal user tokens expire every 60 days and the dashboard then shows "Meta's login has expired".
+- Keep the ad account id and business id in **public variables** (`META_AD_ACCOUNT_ID`, `META_BUSINESS_ID`), read with a fallback. Ad account ids start with `act_`.
+
+## The actions used
+
+| Action | For | Key arguments |
+|---|---|---|
+| Meta **Insights** (`GET /{ad-account}/insights`) | Spend, impressions, clicks, leads, purchases, revenue | `object_id` (act_...), `level` (account, campaign, ad), `time_range {since, until}` or `date_preset`, `time_increment` (1 for daily, `all_days` for totals), `fields`, `filtering`, `limit`, `after` |
+| Meta **Campaigns** (`GET /{ad-account}/campaigns`) | Campaign list with status and budget | `ad_account_id`, `fields: [id, name, objective, effective_status, daily_budget, start_time]` |
+| Meta **Ad creative** (`GET /{ad-id}?fields=creative{...}`) | One ad's picture, headline, text, button | `object_id` (ad id), `fields: "creative.thumbnail_width(480).thumbnail_height(480){thumbnail_url,title,body,call_to_action_type}"` |
+| Meta **Activities** (`GET /{ad-account}/activities`) | The account's change and billing log | `object_id`, `since`, `limit: 20`, `after`, fields incl. `translated_event_type`, `actor_name`, `extra_data` |
+| Meta **Ad accounts** (`GET /me/adaccounts`) | Discover which ad accounts the token sees | `fields: id, name, currency, timezone_name` |
+
+## Correctness rules
+
+1. **Two passes, then merge.** Read spend, impressions and link clicks in one call (filtered to `spend > 0`), and `actions` plus `action_values` in a second call (filtered to the lead and purchase action types). Merge by `date + campaign_id` (or `ad_id`). A day with spend but no lead is never dropped, and each answer stays small.
+2. **Leads are the largest, never the sum.** Meta reports the same lead under several action types (`lead`, `onsite_conversion.lead_grouped`, `offsite_conversion.fb_pixel_lead`, `leadgen_grouped`). Take the maximum. Same for purchases (`purchase`, `omni_purchase`, `offsite_conversion.fb_pixel_purchase`, `onsite_web_purchase`).
+3. **Results = leads + purchases.** Cost per result = spend / results.
+4. **Link clicks are `inline_link_clicks`**, not `clicks` (which counts every click on the ad).
+5. **Budgets and billing amounts come in the smallest unit** (paise, cents). Divide `daily_budget` and activity log amounts by 100.
+6. **Dates are the ad account's timezone.** `date_start` is the day in that timezone; compare with the workspace's timezone days.
+7. **A shared ad account:** filter campaigns by name to the projects this app is for, and hide the rest. Example rule: a campaign name containing the event's short code is the event project; names containing the product or brand words are the product project; anything else belongs to another business and is never shown. Keep the words in one function (or a variable the owner can edit), and where possible push the filter to Meta (`campaign.name CONTAIN "<code>"`) so fewer rows come back.
+
+## Speed and limits
+
+- **Windows:** read long ranges as 7-day windows, at most **3 in parallel**.
+- **Totals per ad** for a whole range use `time_increment: "all_days"` in one window, so an ad is not split.
+- **Shrinking pages:** start at 50 rows. If the answer is cut (`preview: true`, or `shown < total`, or a note like "Showing 96 of the 100"), halve the page size and ask again, down to 5. On a timeout retry the page smaller up to 3 times.
+- **Final errors stop at once:** not connected, rate limited, not approved, role not allowed, signed out, bad args, expired token (OAuth 190). Never retry those.
+- **Cache finished days:** a range that ends before today never changes, keep it in memory. Today is always read again.
+- **Creatives one at a time:** reading one ad per call keeps picture links whole. Cache the cards so they stay visible when Meta is slow.
+- **Account log:** 20 events per page, newest first, "Load more" per click, never a loop.
+- **"All time"** starts at the project's first campaign start date, so Meta is not asked about empty months.
+
+## What the screens show
+
+- KPI cards: ad spend, results, cost per result, link clicks (with CTR), money received, return on ad spend, leads, active campaigns.
+- "What needs attention": campaigns over a spend threshold with no results, or over 2x the average cost per result.
+- Campaigns table: Running now / With spend / All, tap a row for day by day numbers.
+- Creatives grid: 3 per row on desktop, picture, headline, text, spend, results, cost per result, CTR, Ads Manager link.
+- Daily log: one row per day plus "Copy for WhatsApp".
+
+## When Meta is not available
+
+- Not connected: the kit's not-connected text, no numbers (a dash), no fake zeros.
+- Read failed with saved numbers on screen: keep them and say "Couldn't refresh from Meta (reason). Showing the numbers from 3:39 pm."
+- Rate limited: say "Meta limits how often the app can ask. Wait a minute and press Sync now."
+
+
+---
+
+<!-- file: docs/08-ui-ux-design.md -->
+# 08. UI and UX design
+
+The bar: an app people would pay for, not a template. For a work app (dashboards, lists, forms) the work comes first: clear navigation, every state, small useful motion.
+
+## Look and theme
+
+- **One place for colour:** `src/index.css`, light in `:root`, dark in `.dark`. Start from a preset in `src/themes/` (neutral, signature, universe, corporate, editorial, bold, soft, night) and adjust tokens. Never put colours anywhere else; use tokens like `bg-background`, `text-muted-foreground`, `border`, `bg-primary`.
+- **Pick a direction for this business** and commit: type pairing, palette (one dominant family, one accent doing real work), spacing rhythm, one signature element.
+- Avoid the AI-default looks: cream + serif + terracotta, near-black + acid accent, reflex indigo/violet.
+- Ads Hub: the "signature" preset. Plum primary `#7A2E5C`, gold accent `#F2A93B`, dark ink `#1A1620` for bands, Space Grotesk headings and numbers, Inter body, 16 px radius, 24 px cards.
+
+## Components
+
+- **shadcn/ui only.** Select, Calendar, Popover, Dialog, Sheet, Table, Tabs, Tooltip, Sidebar, Toggle group, Badge, Skeleton, Sonner. Never native selects, date inputs or raw tables; the build check refuses them.
+- `Command` only inside a Popover or Dialog, never open in the page.
+- **Ready blocks first** (the kit's ~200 blocks and 21 screens), your own components for the rest, eject a block only to change it.
+- Icons: lucide-react. No emoji in the UI.
+
+## Every data block has four states
+
+1. **Loading:** a skeleton, at most about 8 seconds, then the error state. Never an endless spinner.
+2. **Empty:** one friendly sentence and the next step ("No sessions yet. Upload the Zoom report after the webinar.").
+3. **Error:** the platform's own words and a Try again. Keep the last numbers on screen if there are any.
+4. **Content.**
+
+## Numbers
+
+- Compact money per currency on cards (`₹65.8K`, `₹2.07 Cr`, `$4.96M`), full value underneath in small text.
+- Never a number that cannot be right (a rate over 100%, a negative count). Check the maths or leave it out.
+- Never ₹0 or an empty chart when the truth is "not connected" or "failed". Show a dash and the reason.
+- Never add two currencies together.
+- Tabular numbers (`tabular-nums`) where numbers change in place.
+
+## Navigation and layout (Ads Hub pattern)
+
+- **Sidebar** with grouped navigation (Performance, Ads, Setup), collapsible to icons, a sheet on phones.
+- A **badge** on the Connectors item when something needs attention.
+- **Sticky header:** current page title, project tag, **date range picker defaulting to Today**, sync status and Sync now, dark mode toggle.
+- A thin progress bar under the header while fresh numbers load in the background.
+- Hash routes (`#/overview`) so links and back/forward work; old links redirect after pages merge (`#/event` → `#/bf`).
+- Merge thin pages into tabs on one page rather than many near-empty pages.
+
+## Feedback and motion
+
+- Every action shows busy, success and error states. Toasts for results (`sonner`), with an action button where useful ("Copy").
+- Page entrances `animate-in fade-in slide-in-from-bottom-2`; transform and opacity only; respect `prefers-reduced-motion`.
+- No remount on refresh: what is on screen stays while new numbers load.
+- Show save state ("Saving...", "Saved") and ask before leaving unsaved changes.
+
+## Lists and tables
+
+Search, status chips, sort, clickable rows, one "..." menu per row. Long names truncate with the full text in a tooltip. Wide tables scroll inside their own box. Export to CSV where the owner needs it (`14-imports-exports.md`).
+
+## Copy
+
+Plain words, written for this business. Say what the thing does and what to do next. No jargon, no internal tool or vendor names (always "Connector Hub"). No em dashes in materials written for the owner.
+
+## The design check after every look
+
+1. Spacing rhythm on a 4/8 px scale; equal gaps in a row.
+2. Padding p-4 to p-6 in cards; no text near an edge.
+3. Nothing cut off; no short label broken onto two lines; big numbers fit their card.
+4. Contrast at least 4.5:1, also on hover and focus.
+5. Dark mode reads well everywhere.
+6. Every data block has its four states.
+7. Motion alive but calm.
+8. Phone width: nothing scrolls sideways, nothing overlaps.
+
+
+---
+
+<!-- file: docs/09-responsive-and-accessibility.md -->
+# 09. Responsive on every device, accessible to everyone
+
+Build for phone and desktop from the first line, not at the end.
+
+## The widths that must work
+
+| Width | Device | Check |
+|---|---|---|
+| 375 px | Phone | Everything stacks, no sideways scroll, touch targets 44 px |
+| 768 px | Tablet | Two columns where it helps, sidebar as a sheet or icons |
+| 1280 to 1440 px | Laptop, desktop | Full layout, max content width (Ads Hub: 1400 px) |
+
+Verify at the end of the work with a phone-size and a desktop preview screenshot, and in a browser's device view.
+
+## Layout rules
+
+- **Fluid containers:** `max-w-[1400px] mx-auto`, padding `p-3 sm:p-5 lg:p-7`.
+- **Grids collapse:** `grid gap-3 md:grid-cols-2 lg:grid-cols-4` for KPI cards; creatives 1 column on phone, 3 per row on desktop.
+- **Header wraps:** `flex flex-wrap items-center justify-between gap-2`; less important text hidden on small screens (`hidden sm:inline`).
+- **Sidebar** collapses to icons on desktop and becomes a sheet on phones; close it after a tap (`setOpenMobile(false)`).
+- **Popovers fit the screen:** width `min(100vw - 1.5rem, 31rem)`, `max-h-[calc(100dvh-5rem)] overflow-y-auto`, `collisionPadding`. The date picker's presets become a 4-column grid on phones and a side list on desktop.
+- **Tables** scroll inside their own box (`overflow-x-auto`), never the page.
+- **Text** truncates with a title, never pushes the layout wider. `min-w-0` on flex children that hold text.
+- Heights with `dvh`, never `vh` for full-screen roots on phones.
+- **Sign-in split screen:** brand panel beside the form on desktop, a compact brand bar on top on phones.
+
+## Accessibility
+
+- Real elements: `<button>`, `<a href>`, `<form>`, `<label>` + input. Never click handlers on a div.
+- `aria-label` on icon-only buttons ("Toggle dark mode", "Sync now", "Open menu").
+- Progress indicators with `role="progressbar"` and a label while active; `role="status"` and `aria-live="polite"` on loading screens.
+- Contrast 4.5:1 for text, 3:1 for large text and UI parts, also in dark mode and on hover.
+- Colours that must be told apart also differ in lightness, not only hue.
+- Keyboard: Tab reaches everything, Enter submits forms, focus lands on the first field of a form.
+- Sign-in fields with `autocomplete="email"`, `current-password` and `new-password`, so browsers and password managers save logins.
+- Respect `prefers-reduced-motion` (`motion-reduce:animate-none`, `motion-safe:`).
+
+## The sandbox
+
+Apps run inside a sandboxed frame. That affects:
+
+- **Downloads:** a normal download link is blocked; see `14-imports-exports.md`.
+- **Navigation:** open platform pages (a booking page, a payment link) in a new tab with `target="_blank" rel="noopener"`, never in the app frame.
+- **Clipboard:** use a hidden textarea and `document.execCommand("copy")` first, then the Clipboard API.
+- **Storage:** `localStorage` may be off; wrap every read and write in try/catch.
+
+
+---
+
 <!-- file: templates/connector-check.md -->
 # Connector check: <app>, <date, time>
 
