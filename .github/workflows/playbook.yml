@@ -1,0 +1,26 @@
+name: playbook
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: write
+jobs:
+  check-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Check for secrets, ids, internal names and em dashes
+        run: python3 scripts/check_playbook.py
+      - name: Build PLAYBOOK.md (the single-file version)
+        run: python3 scripts/build_playbook.py
+      - name: Commit PLAYBOOK.md if it changed
+        if: github.event_name == 'push'
+        run: |
+          git config user.name "playbook-bot"
+          git config user.email "playbook-bot@users.noreply.github.com"
+          git add PLAYBOOK.md
+          git diff --cached --quiet || (git commit -m "Rebuild PLAYBOOK.md [skip ci]" && git push)
