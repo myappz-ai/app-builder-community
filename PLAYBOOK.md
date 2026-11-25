@@ -13,6 +13,25 @@ Anyone can pick this up with no history: create a new project in their AI assist
 
 ---
 
+## Before you start: create your account
+
+This playbook needs a **sub-account** on a MyAppz-powered app builder. The sub-account is your business on the platform: its contacts, payments, forms, apps and connections all live there, and every app you build works inside it.
+
+- **No account yet?** Ask the agency or partner who shared this link to create your sub-account and turn on the app builder for it.
+- **Have one?** Sign in, open the app builder, and copy your two connector links (the app builder connector and your sub-account connector). Your AI needs both.
+
+Without a sub-account an AI can still read this playbook, but it has nothing to build with.
+
+## Which link to use
+
+| For | Use | Why |
+|---|---|---|
+| **People** | This page: `https://github.com/myappz-ai/app-builder-community` | Readable docs, templates and the change history |
+| **AI agents** (Claude, ChatGPT, co-work agents) | `https://raw.githubusercontent.com/myappz-ai/app-builder-community/main/PLAYBOOK.md` | One plain-text file with everything; agents read it in one go |
+| **Coding agents** that clone repositories | The whole repository; start with [AGENTS.md](AGENTS.md) | Keeps docs, templates and checks together |
+
+---
+
 ## Use it in 3 minutes
 
 | You use | Do this |
@@ -31,11 +50,11 @@ Anyone can pick this up with no history: create a new project in their AI assist
 | # | Doc | What it covers |
 |---|---|---|
 | 00 | [Start here](docs/00-start-here.md) | New AI account to first app: project, files, connectors, first prompt |
-| 01 | [Platform and stack](docs/01-platform-and-stack.md) | The platform model, workspaces, link types, the stack, your private platform add-on |
+| 01 | [Platform and stack](docs/01-platform-and-stack.md) | The platform model, sub-accounts, link types, the stack, your private platform add-on |
 | 02 | [Connectors](docs/02-connectors.md) | AI-side connectors (MCP), platform integrations, Connector Hub, which one does what |
 | 03 | [Build workflow](docs/03-build-workflow.md) | The build round: ask, read, small edits, build check, look, hand over, publish |
 | 04 | [Product planning](docs/04-product-planning.md) | Plan like a product manager; the feature checklist that defines "done" |
-| 05 | [Data layer](docs/05-data-layer.md) | Workspace data, app data, forms, platform actions, outside apps, live events |
+| 05 | [Data layer](docs/05-data-layer.md) | Sub-account data, app data, forms, platform actions, outside apps, live events |
 | 06 | [Meta Ads integration](docs/06-meta-ads-integration.md) | Reading ads, leads, purchases, creatives and the account log correctly |
 | 07 | [Meta token runbook](docs/07-meta-token-runbook.md) | A never-expiring Meta system user token, step by step |
 | 08 | [UI and UX design](docs/08-ui-ux-design.md) | Theme, components, states, motion, numbers, navigation, header |
@@ -77,6 +96,8 @@ Templates: [project instructions](templates/project-instructions.md), [feature c
 ```
 app-builder-community/
   README.md                 this page
+  AGENTS.md                 where an AI agent starts
+  llms.txt                  short index for AI tools
   CONTRIBUTING.md           how to improve the playbook
   CHANGELOG.md              what changed
   PLAYBOOK.md               all docs in one file (upload this one; rebuilt automatically on every push)
@@ -1829,11 +1850,11 @@ Use only when the hub cannot do the job. Checklist:
 | # | Check | Call | Result | Fix if not OK |
 |---|---|---|---|---|
 | 1 | App is live, which version, unpublished changes | **live status** | | Publish when asked |
-| 2 | Which workspace each AI connector points to | **integration status** (look at the links it returns) | | Rename or use the right connector |
-| 3 | Connector Hub apps the app uses are active | **list Connector Hub connections** | | Owner reconnects in the workspace's Connector Hub |
+| 2 | Which sub-account each AI connector points to | **integration status** (look at the links it returns) | | Rename or use the right connector |
+| 3 | Connector Hub apps the app uses are active | **list Connector Hub connections** | | Owner reconnects in the sub-account's Connector Hub |
 | 4 | Outside app answers | one tiny read, e.g. Meta **Insights** (`GET /{ad-account}/insights`) today, account level | | Token runbook / reconnect |
 | 5 | Platform integrations the app uses; required apps missing | **integration status** | | Owner connects the app |
-| 6 | Workspace data readable | one `count_only` query per object the app uses | | Approve in Publish / check role |
+| 6 | Sub-account data readable | one `count_only` query per object the app uses | | Approve in Publish / check role |
 | 7 | Syncs still fresh (e.g. Zoom latest join) | latest row query | | Reconnect or use uploads |
 
 Summary in plain words: what works, what does not, the one-line fix for each.
@@ -1900,7 +1921,7 @@ No passwords, tokens or keys are in this file, on purpose.
 | What | Value |
 |---|---|
 | App name / id | |
-| Workspace id | |
+| Sub-account id | |
 | Live link (users) | `<app-domain>/app/<slug>` |
 | Editor / preview (team) | <team-domain>/<editor-path-for-the-app> |
 | Live version | |
@@ -1911,13 +1932,13 @@ No passwords, tokens or keys are in this file, on purpose.
 | Connector | Where | Status | Used for |
 |---|---|---|---|
 
-AI connectors needed in a new account, and which workspace each points to.
+AI connectors needed in a new account, and which sub-account each points to.
 
 ## 4. Structure
 Navigation, pages, header, what each page shows.
 
 ## 5. Data flow
-Each source (workspace data, app data, Connector Hub, platform actions), the files that read it, collections and access.
+Each source (sub-account data, app data, Connector Hub, platform actions), the files that read it, collections and access.
 
 ## 6. Rules to keep
 House rules for this app (wording, defaults, privacy, approvals).
@@ -1939,7 +1960,7 @@ A few numbers with date and time, to confirm a new setup reads the same data.
 <!-- file: templates/project-instructions.md -->
 You build and maintain micro apps on an AI-friendly app builder. PLAYBOOK.md in this project is how we work: read it before acting and follow it.
 
-EDIT ME: Owner: <name>. Workspace: <name / id>. Apps: <names / ids>.
+EDIT ME: Owner: <name>. Sub-account: <name / id>. Apps: <names / ids>.
 EDIT ME: Team preview links on `<team-domain>`. User links on `<app-domain>` or <custom domain>.
 EDIT ME: Timezone for date boundaries: <e.g. Asia/Kolkata>.
 
@@ -1948,10 +1969,10 @@ One-prompt mode: when I just describe an app, follow doc 20 of PLAYBOOK.md. Disc
 How to work:
 - Every request is one round: note the ask on the app, read files before changing them, small exact edits that pass the last-read version, fix any failed build check, look at the app (desktop and phone) only at the end, then hand over in plain words.
 - Audit before building. One change at a time.
-- Platform first; workspace data for the business's numbers; app data only for what nothing else covers; outside services through Connector Hub.
+- Platform first; sub-account data for the business's numbers; app data only for what nothing else covers; outside services through Connector Hub.
 - Real data only. Every data block has loading, empty, error and content states. Mobile and desktop from the start.
 - Never count twice: dedupe people by email/phone, take the largest of overlapping counts.
-- Workspace-data query shapes stay fixed so the app can be published; tell me when Publish needs my approval.
+- Sub-account-data query shapes stay fixed so the app can be published; tell me when Publish needs my approval.
 - Publish only when I ask, and show the preview first.
 - Apps with a login open on the login screen. Dashboards open on Today.
 
