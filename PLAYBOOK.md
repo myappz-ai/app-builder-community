@@ -1266,7 +1266,7 @@ Connectors page: a preview of the message, a channel field, and a confirm dialog
 2. **live status**: which version is live, is the new one ready.
 3. **publish** without confirm: the preview of what goes live. Show it.
 4. On yes: **publish** again with confirm.
-5. If workspace data needs approval: nothing went live. The owner opens the app builder, Publish, approves the listed queries (and the app's permissions for outside actions), then publish again.
+5. If sub-account data needs approval: nothing went live. The owner opens the app builder, Publish, approves the listed queries (and the app's permissions for outside actions), then publish again.
 6. Open the live link in a browser and confirm the change. A sign-in is needed, so ask the owner to sign in in the browser pane if the AI is checking.
 
 ## After publishing
@@ -1332,9 +1332,9 @@ These apply to every person and every AI working on a micro app.
 
 ## Data use
 
-- An app works for one workspace and never reads or guesses another's data.
+- An app works for one sub-account and never reads or guesses another's data.
 - Never copy numbers from the account into code; the app reads them live.
-- Workspace data in apps is read-only; what users type goes into app data.
+- Sub-account data in apps is read-only; what users type goes into app data.
 
 
 ---
@@ -1358,7 +1358,7 @@ Every problem met while building and running Ads Hub, with its cause and fix.
 | Spend for a day missing | Reading spend and conversions in one filtered call | Two calls (spend, conversions), merged by date and id |
 | Numbers from other businesses appear | Shared ad account | Filter campaigns by name to this app's projects |
 | "Connector Hub is not reachable: the action could not run" | A one-off failure of the status check | Press Check again; only act if it repeats |
-| "no key" from **list Connector Hub connections** | That workspace has no Connector Hub set up | Add the key in that workspace's settings, or use the connector for the right workspace |
+| "no key" from **list Connector Hub connections** | That sub-account has no Connector Hub set up | Add the key in that sub-account's settings, or use the connector for the right sub-account |
 
 ## Platform and the app builder
 
@@ -1387,8 +1387,8 @@ Every problem met while building and running Ads Hub, with its cause and fix.
 
 | What you see | Cause | Fix |
 |---|---|---|
-| Zoom sessions stop appearing | Platform Zoom sync stopped | Reconnect Zoom in the workspace's integrations, or upload the attendee report CSV |
-| A connector named for one business shows another's data | Connector points to a different workspace | Check `connect_url` in **integration status**; rename connectors |
+| Zoom sessions stop appearing | Platform Zoom sync stopped | Reconnect Zoom in the sub-account's integrations, or upload the attendee report CSV |
+| A connector named for one business shows another's data | Connector points to a different sub-account | Check `connect_url` in **integration status**; rename connectors |
 
 
 ---
@@ -1410,7 +1410,7 @@ Identifiers below are placeholders. Real values belong in the app's variables an
 |---|---|
 | Staff-only app with its own login, opening on the sign-in screen | Ad numbers and buyer lists are internal |
 | Meta through Connector Hub, not the platform's built-in ads module | Outside apps are the default; built-in ads module only on explicit request |
-| Payments, form entries, staff, Zoom attendance from workspace data | They already live in the platform's modules |
+| Payments, form entries, staff, Zoom attendance from sub-account data | They already live in the platform's modules |
 | Calling list, call log, uploaded Zoom reports, screen cache in app data | Nothing in the platform covers them |
 | Date range opens on **Today** | The team checks the day's numbers first |
 | One project shown at a time; campaigns of other businesses hidden | The ad account is shared |
@@ -1431,7 +1431,7 @@ Identifiers below are placeholders. Real values belong in the app's variables an
 
 **Setup**
 - **Account log:** Meta's change and billing history (7, 30 or 90 days, 20 per page, Load more), money converted from the smallest unit.
-- **Connectors:** only what the app uses (Payment gateway, Zoom, Meta Ads, Slack), the workspace data it reads with live counts, a Zoom staleness warning, Share to Slack.
+- **Connectors:** only what the app uses (Payment gateway, Zoom, Meta Ads, Slack), the sub-account data it reads with live counts, a Zoom staleness warning, Share to Slack.
 
 **Header on every page:** project tag, date range (Today by default), sync status and Sync now, dark mode.
 
@@ -1513,13 +1513,13 @@ Copy these into a chat in the project. Replace anything in `<angle brackets>`.
 Read PLAYBOOK.md in this project fully before doing anything. Follow it as the way we work.
 
 Context:
-- Workspace: <workspace id or name>
+- Sub-account: <sub-account id or name>
 - App (if it exists): <app id or name>. If it does not exist yet, say so and wait for my brief.
 - Team preview links on `<team-domain>`; user links on `<app-domain>` or our domain.
 
 First task: run the connector check from docs/02-connectors.md (the app builder live status, Connector Hub
 connections, one tiny read from each outside app the app uses, platform integrations, and which
-workspace each connector points to). Tell me in plain words what works and what needs fixing.
+sub-account each connector points to). Tell me in plain words what works and what needs fixing.
 Then ask me what to build or change.
 ```
 
@@ -1554,7 +1554,7 @@ else as it is, show me the preview link. Do not publish.
 ## Add a data source
 
 ```
-Add <source, e.g. Google Ads spend> to <page>. Check whether it is a platform module, workspace data,
+Add <source, e.g. Google Ads spend> to <page>. Check whether it is a platform module, sub-account data,
 or a Connector Hub app. Look at a real answer first, then wire it with all four states and a
 not-connected message. Tell me which approvals I need to give.
 ```
