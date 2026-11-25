@@ -10,7 +10,7 @@ No passwords, tokens or keys are in this file, on purpose.
 | What | Value |
 |---|---|
 | App name / id | |
-| Workspace id | |
+| Sub-account id | |
 | Live link (users) | `<app-domain>/app/<slug>` |
 | Editor / preview (team) | <team-domain>/<editor-path-for-the-app> |
 | Live version | |
@@ -21,13 +21,13 @@ No passwords, tokens or keys are in this file, on purpose.
 | Connector | Where | Status | Used for |
 |---|---|---|---|
 
-AI connectors needed in a new account, and which workspace each points to.
+AI connectors needed in a new account, and which sub-account each points to.
 
 ## 4. Structure
 Navigation, pages, header, what each page shows.
 
 ## 5. Data flow
-Each source (workspace data, app data, Connector Hub, platform actions), the files that read it, collections and access.
+Each source (sub-account data, app data, Connector Hub, platform actions), the files that read it, collections and access.
 
 ## 6. Rules to keep
 House rules for this app (wording, defaults, privacy, approvals).

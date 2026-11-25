@@ -1,0 +1,11 @@
+# App Builder Community
+
+> A playbook for building production micro apps with any AI assistant on a MyAppz-powered app builder, inside the person's sub-account, from one prompt.
+
+Start with the single-file playbook. It contains every doc and template below.
+
+- [PLAYBOOK.md](https://raw.githubusercontent.com/myappz-ai/app-builder-community/main/PLAYBOOK.md): everything in one file
+- [AGENTS.md](https://raw.githubusercontent.com/myappz-ai/app-builder-community/main/AGENTS.md): where an AI agent starts
+- [Project instructions](https://raw.githubusercontent.com/myappz-ai/app-builder-community/main/templates/project-instructions.md): rules for every chat
+- [One prompt to a finished app](https://raw.githubusercontent.com/myappz-ai/app-builder-community/main/docs/20-one-prompt-to-app.md)
+- [Integration routes](https://raw.githubusercontent.com/myappz-ai/app-builder-community/main/docs/21-integration-routes.md)

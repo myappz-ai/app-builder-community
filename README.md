@@ -6,6 +6,25 @@ Anyone can pick this up with no history: create a new project in their AI assist
 
 ---
 
+## Before you start: create your account
+
+This playbook needs a **sub-account** on a MyAppz-powered app builder. The sub-account is your business on the platform: its contacts, payments, forms, apps and connections all live there, and every app you build works inside it.
+
+- **No account yet?** Ask the agency or partner who shared this link to create your sub-account and turn on the app builder for it.
+- **Have one?** Sign in, open the app builder, and copy your two connector links (the app builder connector and your sub-account connector). Your AI needs both.
+
+Without a sub-account an AI can still read this playbook, but it has nothing to build with.
+
+## Which link to use
+
+| For | Use | Why |
+|---|---|---|
+| **People** | This page: `https://github.com/myappz-ai/app-builder-community` | Readable docs, templates and the change history |
+| **AI agents** (Claude, ChatGPT, co-work agents) | `https://raw.githubusercontent.com/myappz-ai/app-builder-community/main/PLAYBOOK.md` | One plain-text file with everything; agents read it in one go |
+| **Coding agents** that clone repositories | The whole repository; start with [AGENTS.md](AGENTS.md) | Keeps docs, templates and checks together |
+
+---
+
 ## Use it in 3 minutes
 
 | You use | Do this |
@@ -24,11 +43,11 @@ Anyone can pick this up with no history: create a new project in their AI assist
 | # | Doc | What it covers |
 |---|---|---|
 | 00 | [Start here](docs/00-start-here.md) | New AI account to first app: project, files, connectors, first prompt |
-| 01 | [Platform and stack](docs/01-platform-and-stack.md) | The platform model, workspaces, link types, the stack, your private platform add-on |
+| 01 | [Platform and stack](docs/01-platform-and-stack.md) | The platform model, sub-accounts, link types, the stack, your private platform add-on |
 | 02 | [Connectors](docs/02-connectors.md) | AI-side connectors (MCP), platform integrations, Connector Hub, which one does what |
 | 03 | [Build workflow](docs/03-build-workflow.md) | The build round: ask, read, small edits, build check, look, hand over, publish |
 | 04 | [Product planning](docs/04-product-planning.md) | Plan like a product manager; the feature checklist that defines "done" |
-| 05 | [Data layer](docs/05-data-layer.md) | Workspace data, app data, forms, platform actions, outside apps, live events |
+| 05 | [Data layer](docs/05-data-layer.md) | Sub-account data, app data, forms, platform actions, outside apps, live events |
 | 06 | [Meta Ads integration](docs/06-meta-ads-integration.md) | Reading ads, leads, purchases, creatives and the account log correctly |
 | 07 | [Meta token runbook](docs/07-meta-token-runbook.md) | A never-expiring Meta system user token, step by step |
 | 08 | [UI and UX design](docs/08-ui-ux-design.md) | Theme, components, states, motion, numbers, navigation, header |
@@ -70,6 +89,8 @@ Templates: [project instructions](templates/project-instructions.md), [feature c
 ```
 app-builder-community/
   README.md                 this page
+  AGENTS.md                 where an AI agent starts
+  llms.txt                  short index for AI tools
   CONTRIBUTING.md           how to improve the playbook
   CHANGELOG.md              what changed
   PLAYBOOK.md               all docs in one file (upload this one; rebuilt automatically on every push)
