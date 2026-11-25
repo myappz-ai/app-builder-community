@@ -5,8 +5,8 @@ from datetime import date
 
 root = Path(__file__).resolve().parent.parent
 parts = [
-    "# App Builder Community: Micro App Playbook (single file)\n",
-    f"Built {date.today().isoformat()} from the app-builder-community repository. "
+    "# Micro App Builder: Micro App Playbook (single file)\n",
+    f"Built {date.today().isoformat()} from the micro-app-builder repository. "
     "Upload this one file to a Claude or ChatGPT project. Each section below is one file of the repository.\n",
 ]
 files = [root / "README.md"] + sorted((root / "docs").glob("*.md")) + sorted((root / "templates").glob("*.md"))

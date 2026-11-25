@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.0 (2026-11-25)
+
+- Renamed the repository from app-builder-community to micro-app-builder (old links redirect). Title, links and build scripts updated.
+- LICENSE is now the official CC BY 4.0 text, so GitHub detects it.
+- Topics, description and homepage set.
+
 ## 1.3.0 (2026-11-25)
 
 - One shareable PDF, `App-Builder-Playbook.pdf`, rebuilt on every push; README now gives one link to share.

@@ -1,4 +1,4 @@
-# App Builder Community: the Micro App Playbook
+# Micro App Builder: the Micro App Playbook
 
 The complete, end to end method for building production micro apps with an AI assistant (Claude, ChatGPT or any co-work agent) on any **AI-friendly app builder**: a platform where the AI can edit, check, preview and publish an app, and the app can reach the business's own data and outside apps. It is written from a real build, **Ads Hub** (a live Meta ads, sales and webinar dashboard), and covers everything from an empty AI account to a published, shareable app.
 
@@ -17,7 +17,7 @@ Without a sub-account an AI can still read this playbook, but it has nothing to 
 
 ## The one link to share
 
-**https://github.com/myappz-ai/app-builder-community/raw/main/App-Builder-Playbook.pdf**
+**https://github.com/myappz-ai/micro-app-builder/raw/main/App-Builder-Playbook.pdf**
 
 It downloads the whole playbook as one PDF, always the latest version (rebuilt on every change). People read it; to build, they upload it to a Claude or ChatGPT project and describe the app. Coding agents that clone repositories can start at [AGENTS.md](AGENTS.md).
 
@@ -85,7 +85,7 @@ Templates: [project instructions](templates/project-instructions.md), [feature c
 ## Repository layout
 
 ```
-app-builder-community/
+micro-app-builder/
   README.md                 this page
   AGENTS.md                 where an AI agent starts
   llms.txt                  short index for AI tools

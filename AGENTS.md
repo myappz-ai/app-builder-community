@@ -2,7 +2,7 @@
 
 You are helping someone build a micro app on a MyAppz-powered app builder. Read in this order:
 
-1. **[PLAYBOOK.md](PLAYBOOK.md)**: the whole playbook in one file. Read it fully before acting. Plain-text copy: `https://raw.githubusercontent.com/myappz-ai/app-builder-community/main/PLAYBOOK.md`
+1. **[PLAYBOOK.md](PLAYBOOK.md)**: the whole playbook in one file. Read it fully before acting. Plain-text copy: `https://raw.githubusercontent.com/myappz-ai/micro-app-builder/main/PLAYBOOK.md`
 2. **[templates/project-instructions.md](templates/project-instructions.md)**: the working rules to follow in every chat.
 3. If the person describes an app in one paragraph, follow **[docs/20-one-prompt-to-app.md](docs/20-one-prompt-to-app.md)**.
 

@@ -10,7 +10,7 @@ from weasyprint import HTML
 root = Path(__file__).resolve().parent.parent
 files = [root / "README.md"] + sorted((root / "docs").glob("*.md")) + sorted((root / "templates").glob("*.md"))
 
-REPO = "https://github.com/myappz-ai/app-builder-community"
+REPO = "https://github.com/myappz-ai/micro-app-builder"
 
 
 def fix_links(html: str) -> str:
@@ -31,7 +31,7 @@ for f in files:
 
 css = """
 @page { size: A4; margin: 18mm 16mm 18mm 16mm;
-  @bottom-center { content: "App Builder Community playbook  |  page " counter(page); font-size: 8pt; color: #8a8494; } }
+  @bottom-center { content: "Micro App Builder playbook  |  page " counter(page); font-size: 8pt; color: #8a8494; } }
 @page :first { @bottom-center { content: none; } }
 body { font-family: "DejaVu Sans", sans-serif; font-size: 9.6pt; line-height: 1.45; color: #1A1620; }
 h1 { font-size: 18pt; color: #7A2E5C; margin: 0 0 8pt; }
@@ -57,7 +57,7 @@ section.doc { page-break-before: always; }
 
 cover = f"""
 <div class="cover">
-  <h1>App Builder Community</h1>
+  <h1>Micro App Builder</h1>
   <div class="sub">The Micro App Playbook: build production apps in your sub-account with any AI assistant, from one prompt.</div>
   <div class="bar"></div>
   <div class="meta">
@@ -69,7 +69,7 @@ cover = f"""
 </div>
 """
 
-html = f"<html><head><meta charset='utf-8'><title>App Builder Community: Micro App Playbook</title><style>{css}</style></head><body>{cover}{''.join(sections)}</body></html>"
+html = f"<html><head><meta charset='utf-8'><title>Micro App Builder: Micro App Playbook</title><style>{css}</style></head><body>{cover}{''.join(sections)}</body></html>"
 out = root / "App-Builder-Playbook.pdf"
 HTML(string=html, base_url=str(root)).write_pdf(out)
 print(f"wrote {out} ({out.stat().st_size // 1024} KB)")
