@@ -6,7 +6,7 @@ Every outside app an app talks to (ads, CRM, email, chat, payments, files, weara
 
 | Route | What it is | Who signs in | Where the credential lives | Use when |
 |---|---|---|---|---|
-| **1. Connector Hub** (default) | The workspace's hub holds one connection per outside app; apps call it for reads and changes | The owner, once, on the provider's own page (redirect and back) | Inside the hub, never visible to the app, the AI or chat | The provider is in the hub's catalogue |
+| **1. Connector Hub** (default) | The sub-account's hub holds one connection per outside app; apps call it for reads and changes | The owner, once, on the provider's own page (redirect and back) | Inside the hub, never visible to the app, the AI or chat | The provider is in the hub's catalogue |
 | **2. Direct API** | The app (on the server side) calls the provider's API itself | The owner, through the provider's OAuth page, or by creating a key | A **server-side secret**, never in browser code | The provider is not in the hub, or the hub lacks an endpoint you need |
 | **3. MCP server** | An AI-side connector to the provider (official MCP if one exists) | The person using the AI, in their AI account | In the AI account's connector settings | The **AI** needs the provider while building: reading docs, testing a call, checking an account, diagnosing |
 
@@ -26,7 +26,7 @@ Owner asks to connect  →  start a connection (preview, then confirm)
 Rules:
 
 - **Redirect, never collect.** People sign in on the provider's page. Nobody types a password, code or key into chat, the app, or a form you built.
-- **Apps never show their own connect button or link.** When a hub app is not connected, the app shows a calm "not connected" message telling people to ask the owner. Connecting is the owner's job, in the workspace settings or through the flow above.
+- **Apps never show their own connect button or link.** When a hub app is not connected, the app shows a calm "not connected" message telling people to ask the owner. Connecting is the owner's job, in the sub-account settings or through the flow above.
 - **Build with the hub action even before it is connected.** Search the hub's catalogue for the exact action and its fields, write the call, and let the not-connected message show until the owner connects.
 - **Reads run directly; changes need approval.** The owner approves each change action by name (send, post, update). Approving one never allows another. Apps never delete in outside apps.
 - **One default per provider.** Several connections of one provider: the newest is the default; old ones are removed by the owner.
