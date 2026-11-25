@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.0 (2026-11-25)
+
+- One shareable PDF, `App-Builder-Playbook.pdf`, rebuilt on every push; README now gives one link to share.
+
 ## 1.2.0 (2026-11-25)
 
 - Businesses are called **sub-accounts** everywhere (was "workspace").
