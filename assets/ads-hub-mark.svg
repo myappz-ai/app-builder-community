@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 120 120" role="img" aria-label="Ads Hub">
+  <rect width="120" height="120" rx="30" fill="#7A2E5C"/>
+  <g stroke="#FFFFFF" stroke-width="6" stroke-linecap="round">
+    <line x1="60" y1="60" x2="31" y2="31"/>
+    <line x1="60" y1="60" x2="31" y2="89"/>
+    <line x1="60" y1="60" x2="89" y2="89"/>
+  </g>
+  <line x1="60" y1="60" x2="87" y2="33" stroke="#F2A93B" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="31" cy="31" r="8" fill="#FFFFFF"/>
+  <circle cx="31" cy="89" r="8" fill="#FFFFFF"/>
+  <circle cx="89" cy="89" r="8" fill="#FFFFFF"/>
+  <circle cx="89" cy="31" r="12" fill="#F2A93B"/>
+  <circle cx="60" cy="60" r="13" fill="#FFFFFF"/>
+  <circle cx="60" cy="60" r="5" fill="#7A2E5C"/>
+</svg>
