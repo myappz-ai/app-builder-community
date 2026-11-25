@@ -44,7 +44,7 @@ An app with sign-in gets **one admin**: its first person. Ask the owner once whi
 ## Who sees what
 
 - **Staff screens** check `(await app.auth.user())?.role === "admin"` (or `staff`). Use only those two role names for staff.
-- **Workspace data** answers only for signed-in members of the account inside the platform.
+- **Sub-account data** answers only for signed-in members of the account inside the platform.
 - **Ad numbers** from Meta are visible to the app's staff by default. Opening them wider needs the owner's explicit ask (the **access roles setting**).
 - **Platform actions** that touch other people's data run only for staff; plain users act on their own rows only (`NOT_YOURS`, `ROLE_NOT_ALLOWED` otherwise). Show: "Ask the app's admin to let your role do this." / "You can only change your own."
 - **Outside-app actions** are approved one by one by the owner in the app's permissions. Approving one never allows another.

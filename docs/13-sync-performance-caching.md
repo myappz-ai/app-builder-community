@@ -24,7 +24,7 @@ cacheSet(key, value) → all three layers (server copy debounced 1.5 s,
 - A tab hidden past the due time catches up when it becomes visible (`visibilitychange`).
 - **Sync now** is always available: it bumps a `refreshKey` that every provider listens to, and rechecks connectors.
 - A popover shows "Last synced" and "Next automatic sync". The header shows "Synced 3:21 pm" with a green dot, or a warning colour and the reason.
-- Workspace data uses **live events**, not timers (`{ live: ["payment.paid"] }`). Use a timer only for sources with no push signal (Meta).
+- Sub-account data uses **live events**, not timers (`{ live: ["payment.paid"] }`). Use a timer only for sources with no push signal (Meta).
 - After a manual sync, one toast with the outcome; automatic syncs stay quiet.
 
 ## Talking to Meta (and any rate-limited service)

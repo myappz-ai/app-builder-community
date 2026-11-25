@@ -13,7 +13,7 @@ Duplicates break trust faster than anything else in a business app. Every rule b
 | Money in several currencies | Show each on its own; never add them. |
 | Buyers estimated from money | Label it as an estimate ("buyers ≈ money ÷ price"). |
 | Net of GST | Show as a separate line (`÷ 1.18`), keep gross visible. |
-| Timezones | Use the workspace's timezone for "today" and day buckets, so the app matches the platform's own dashboards. Never filter workspace data again in UTC in the browser (it dropped midnight to 5:30 AM IST once). |
+| Timezones | Use the sub-account's timezone for "today" and day buckets, so the app matches the platform's own dashboards. Never filter sub-account data again in UTC in the browser (it dropped midnight to 5:30 AM IST once). |
 
 ## People: one person, one row
 
@@ -47,4 +47,4 @@ Duplicates break trust faster than anything else in a business app. Every rule b
 ## Connections: no duplicate connectors
 
 - Several Connector Hub connections of one app (old 60-day Meta tokens): the newest is the default. Keep one, let the owner remove the rest. Never remove the default.
-- Name AI connectors after the workspace they point to.
+- Name AI connectors after the sub-account they point to.

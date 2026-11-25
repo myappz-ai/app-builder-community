@@ -1,6 +1,6 @@
 # 07. Meta token runbook: a token that never expires
 
-Use this when a dashboard says "Meta's login has expired", or when connecting Meta Ads to a new workspace. It can be followed by a person, or pasted into a browser-capable AI agent that does every click while the person only signs in, clicks Generate and Copy, and pastes into one box.
+Use this when a dashboard says "Meta's login has expired", or when connecting Meta Ads to a new sub-account. It can be followed by a person, or pasted into a browser-capable AI agent that does every click while the person only signs in, clicks Generate and Copy, and pastes into one box.
 
 Background: personal Meta user tokens expire every 60 days. A **system user token** with expiry set to **Never**, made from an app that has the **Create & manage ads with Marketing API** use case, does not. Apps made for other use cases (for example an Instant Game app) can never be used and cause "No permissions available".
 
@@ -28,7 +28,7 @@ You are connecting a business's Meta (Facebook) ad account to its dashboard with
 | `BUSINESS_ID` | Find it yourself: open https://business.facebook.com/settings/system-users, pick `BUSINESS_NAME` in Meta's business picker, and read `business_id=` from the address bar |
 | `APP_NAME` | Use **Ads Connector**, unless the user prefers another name |
 | `SYSTEM_USER` | Whichever system user already exists on the System users page; if none, create one called **Connector Hub** (role Admin) |
-| `PLATFORM_URL` | Your platform's admin link (the user logs in). The Connector Hub is in the workspace's settings |
+| `PLATFORM_URL` | Your platform's admin link (the user logs in). The Connector Hub is in the sub-account's settings |
 | `DASHBOARD` | Ask the user which dashboard/app to check at the end, or open it from the platform after login |
 
 Keep these values only in your working memory for this task. Don't repeat IDs or names back to the user more than needed, and never put them in files you create.
@@ -153,7 +153,7 @@ Keep these values only in your working memory for this task. Don't repeat IDs or
 
 ## 6. Put the token into Connector Hub (2 minutes)
 
-1. Open `PLATFORM_URL` (login → hand-off 1), then open the workspace's **Connector Hub** settings.
+1. Open `PLATFORM_URL` (login → hand-off 1), then open the sub-account's **Connector Hub** settings.
 2. In **Search your apps**, type **Meta Ads**. If a **Meta Ads** card shows under **Connected**, click **Disconnect** on it.
    - This only switches the old (expired) connection off for this page.
    - Without this step, the new token can't be added.

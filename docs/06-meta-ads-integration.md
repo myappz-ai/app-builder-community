@@ -25,7 +25,7 @@ Meta is the hardest data source in a marketing app: big answers, rate limits, ov
 3. **Results = leads + purchases.** Cost per result = spend / results.
 4. **Link clicks are `inline_link_clicks`**, not `clicks` (which counts every click on the ad).
 5. **Budgets and billing amounts come in the smallest unit** (paise, cents). Divide `daily_budget` and activity log amounts by 100.
-6. **Dates are the ad account's timezone.** `date_start` is the day in that timezone; compare with the workspace's timezone days.
+6. **Dates are the ad account's timezone.** `date_start` is the day in that timezone; compare with the sub-account's timezone days.
 7. **A shared ad account:** filter campaigns by name to the projects this app is for, and hide the rest. Example rule: a campaign name containing the event's short code is the event project; names containing the product or brand words are the product project; anything else belongs to another business and is never shown. Keep the words in one function (or a variable the owner can edit), and where possible push the filter to Meta (`campaign.name CONTAIN "<code>"`) so fewer rows come back.
 
 ## Speed and limits
