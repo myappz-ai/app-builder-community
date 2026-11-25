@@ -6,7 +6,7 @@ The person asking is usually a business owner, not a developer. They describe an
 
 - From the request, list the jobs the app must do.
 - For each job, search the platform's actions in plain words (**search platform actions**). Note what the platform already does.
-- If the app shows the business's own numbers, look at the real data now: **list workspace data** (module), **describe a data object** (object fields, real values), **query workspace data** (one real answer).
+- If the app shows the business's own numbers, look at the real data now: **list sub-account data** (module), **describe a data object** (object fields, real values), **query sub-account data** (one real answer).
 
 ## Step 2. Plan the product
 
@@ -40,7 +40,7 @@ Walk the checklist item by item. Each item is: done with a platform module, done
 |---|---|
 | Does the app open on a public page or the login? | **Login screen**, for any app with accounts |
 | Default date range on dashboards | **Today** |
-| Timezone for date boundaries | **The workspace's own timezone** (IST for Indian tenants), so numbers match the platform's dashboards |
+| Timezone for date boundaries | **The sub-account's own timezone** (IST for Indian tenants), so numbers match the platform's dashboards |
 | Where do settings the owner may change live? | Public variables, with a fallback in code |
 | Outside services (Meta, Gmail, Slack) | Connector Hub through a **Connector Hub read**, connected or not; show a not-connected message until it is |
 | The platform's built-in ads module | Only when the user explicitly asks for it |

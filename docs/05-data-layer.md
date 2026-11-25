@@ -4,17 +4,17 @@ An app has five data sources. Pick the right one for each feature.
 
 | Source | Read/write | Use for | Call |
 |---|---|---|---|
-| **Workspace data** | Read only, live | The business's real payments, form entries, contacts, deals, staff, Zoom attendance | `useWorkspaceQuery(spec)` |
+| **Sub-account data** | Read only, live | The business's real payments, form entries, contacts, deals, staff, Zoom attendance | `useSubAccountQuery(spec)` |
 | **App data** | Read and write | What people type into the app: calling lists, notes, uploads, saved settings, caches | `app.db.collection(name)` |
-| **Forms** | Write | Leads that must land in the workspace's forms and CRM | `app.forms.submit(formId, answers)` |
+| **Forms** | Write | Leads that must land in the sub-account's forms and CRM | `app.forms.submit(formId, answers)` |
 | **Platform actions** | Read and write | Bookings, contacts, templates, sites, payment links, integration status | `app.platform.run(action, args)` |
 | **Outside apps (Connector Hub)** | Read and write | Meta Ads, Slack, Gmail, Google Drive... | a **Connector Hub read** / a **Connector Hub change** |
 
-## Workspace data (`useWorkspaceQuery`)
+## Sub-account data (`useSubAccountQuery`)
 
 ### Look first
 
-Never guess an object or field name. While building: **list workspace data** → **describe a data object** → **query workspace data**. Use the exact names and values you saw. A wrong name answers "did you mean...": use the suggestion.
+Never guess an object or field name. While building: **list sub-account data** → **describe a data object** → **query sub-account data**. Use the exact names and values you saw. A wrong name answers "did you mean...": use the suggestion.
 
 ### The spec
 
@@ -26,7 +26,7 @@ Never guess an object or field name. While building: **list workspace data** →
 
 - `filters`: `{ field: value }` or `{ field: { gt | gte | lt | lte | neq | in | contains | is } }`.
 - `group_by` / `time_grain` for charts; `count_only` or a `metric` for number cards; small `limit` (10 to 25) for tables.
-- `period` presets (`today`, `yesterday`, `last_7_days`, `last_30_days`, `this_month`, `last_month`, `this_year`) use the **workspace's timezone**.
+- `period` presets (`today`, `yesterday`, `last_7_days`, `last_30_days`, `this_month`, `last_month`, `this_year`) use the **sub-account's timezone**.
 - Sorting key is `dir`, never `direction`.
 - **Money comes per currency** (`{ "INR": 250000 }`). Show each currency on its own, never add two together.
 
@@ -41,11 +41,11 @@ A published app runs only queries the owner approved. The **shape** of every spe
 
 ### Calm screens
 
-- One `useWorkspaceQuery` per block, so one slow read never blocks the others.
+- One `useSubAccountQuery` per block, so one slow read never blocks the others.
 - Skeleton only while `isLoading`; small "Updating..." while `isRefreshing`.
 - On error show `error.message` with Retry, keep the last numbers. `NOT_APPROVED` and `UNPUBLISHED`: show the message, no Retry.
-- Live updates without polling: `useWorkspaceQuery(spec, { live: ["payment.paid"] })`. Signals available: `booking.created`, `booking.cancelled`, `form.submitted`, `payment.paid`, `contact.created`.
-- Workspace data answers only for a signed-in member of the workspace. A public visitor gets a clear message, never fake numbers.
+- Live updates without polling: `useSubAccountQuery(spec, { live: ["payment.paid"] })`. Signals available: `booking.created`, `booking.cancelled`, `form.submitted`, `payment.paid`, `contact.created`.
+- Sub-account data answers only for a signed-in member of the sub-account. A public visitor gets a clear message, never fake numbers.
 
 ## App data (`app.db`)
 
@@ -95,10 +95,10 @@ await hub.change("<exact action name>", { channel, text }, { summary: "Post toda
 | Feature | Source |
 |---|---|
 | Ad spend, leads, purchases, creatives, campaigns, account log | Connector Hub, Meta Ads |
-| Money received, per day and product | Workspace data, `revenue_received` metric |
-| Event registrations | Workspace data, `form_submissions` |
-| Callers | Workspace data, `staff_members` |
-| Zoom attendance sync | Workspace data, `zoom_attendance` |
+| Money received, per day and product | Sub-account data, `revenue_received` metric |
+| Event registrations | Sub-account data, `form_submissions` |
+| Callers | Sub-account data, `staff_members` |
+| Zoom attendance sync | Sub-account data, `zoom_attendance` |
 | Calling list, call log, uploaded Zoom reports, screen cache | App data collections |
 | Connector status | Platform actions **integration status**, **list Connector Hub connections** |
 | Share to Slack | Connector Hub, a **Connector Hub change** |

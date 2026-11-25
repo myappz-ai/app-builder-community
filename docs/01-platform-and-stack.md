@@ -6,19 +6,19 @@ This playbook works on any **AI-friendly app builder**: a platform where an AI a
 
 ```
 Platform
-  └── Workspace  = ONE business: its own contacts, deals, payments, forms,
-        │          staff, brand, domain and connections
+  └── Sub-account  = ONE business: its own contacts, deals, payments, forms,
+        │            staff, brand, domain and connections
         └── Apps
-              ├── App data           the app's own store (collections)
-              ├── App users          the app's own sign-in
-              ├── Forms              leads into the workspace's real forms and CRM
-              ├── Workspace data     live, read-only data of the business
-              ├── Platform actions   book, add a contact, send a template, publish a page...
-              └── Connector Hub      outside apps (ads, chat, email, files, payments...)
+              ├── App data            the app's own store (collections)
+              ├── App users           the app's own sign-in
+              ├── Forms               leads into the sub-account's real forms and CRM
+              ├── Sub-account data    live, read-only data of the business
+              ├── Platform actions    book, add a contact, send a template, publish a page...
+              └── Connector Hub       outside apps (ads, chat, email, files, payments...)
 ```
 
-- A **workspace is one business**. An app always works for one workspace, with only its data. Never mix workspaces.
-- People in a workspace: owner, admin, staff. An app also has its **own** users, separate from workspace users.
+- A **sub-account is one business**. An app always works for one sub-account, with only its data. Never mix sub-accounts.
+- People in a sub-account: owner, admin, staff. An app also has its **own** users, separate from sub-account users.
 
 ## Three kinds of link
 
@@ -54,9 +54,9 @@ Code samples in this playbook use this neutral pseudo-API. Map each line to your
 | Pseudo-API | What it does |
 |---|---|
 | `app.db.collection(name)` | The app's own store: insert, list, get, update, remove |
-| `app.forms.submit(formId, answers)` | Sends a lead into the workspace's forms and CRM |
+| `app.forms.submit(formId, answers)` | Sends a lead into the sub-account's forms and CRM |
 | `app.auth.signUp / signIn / signOut / user()` | The app's own users |
-| `useWorkspaceQuery(spec)` / `app.workspace.query(spec)` | Live, read-only workspace data (payments, form entries, contacts, staff...) |
+| `useSubAccountQuery(spec)` / `app.subAccount.query(spec)` | Live, read-only sub-account data (payments, form entries, contacts, staff...) |
 | `app.platform.run(action, args)` | A platform action (book, add contact, send template...) |
 | `hub.read(action, args)` / `hub.change(action, args)` | A Connector Hub read or change in an outside app |
 | `app.track(event)` | Analytics |
@@ -78,7 +78,7 @@ Keep one private file, for example `platforms/<your-platform>.md`, that lists:
 
 - your domains for preview and live links;
 - the real names of the builder tools (note the request, read files, edit, check, preview screenshot, hand over, publish, version history);
-- the real names of the data calls (workspace data, app data, forms, platform actions, Connector Hub read and change, start a connection, connection status);
+- the real names of the data calls (sub-account data, app data, forms, platform actions, Connector Hub read and change, start a connection, connection status);
 - where settings live (name, description, variables, secrets, permissions, domains, approvals).
 
 Upload it to the same AI project as `PLAYBOOK.md`. The public playbook stays the same for everyone; the add-on teaches the AI your platform's words.

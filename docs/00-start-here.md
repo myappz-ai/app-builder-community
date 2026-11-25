@@ -1,13 +1,13 @@
 # 00. Start here: from a new AI account to your first app
 
-This page assumes nothing. You have a fresh Claude (or ChatGPT) account and access to a workspace on your platform. By the end you have a project that knows this whole playbook and can build, fix and publish micro apps.
+This page assumes nothing. You have a fresh Claude (or ChatGPT) account and access to a sub-account on your platform. By the end you have a project that knows this whole playbook and can build, fix and publish micro apps.
 
 ## What you need before you start
 
 | Need | Why | Where to get it |
 |---|---|---|
-| A login to your app platform with access to the workspace the app will live in | The app, its data and its connections live in one workspace | Your agency or super admin |
-| Owner or admin role in that workspace | Publishing, approving data reads and connecting apps need it | Ask the account owner |
+| A login to your app platform with access to the sub-account the app will live in | The app, its data and its connections live in one sub-account | Your agency or super admin |
+| Owner or admin role in that sub-account | Publishing, approving data reads and connecting apps need it | Ask the account owner |
 | A Claude Pro/Team/Enterprise account (or ChatGPT with Projects) | Projects, files and connectors | claude.ai |
 | The **app builder connector** URL for your account | Lets the AI read and edit app code, check it, preview and publish | Your platform team (see 02-connectors) |
 | Optional: the Claude desktop app | Lets the AI use a browser on your computer (sign-in pages, Meta Business Settings) | claude.ai/download |
@@ -17,7 +17,7 @@ This page assumes nothing. You have a fresh Claude (or ChatGPT) account and acce
 1. In Claude, open **Projects** and click **New project**.
 2. Name it after the app or the work, for example `Micro apps` or `Ads Hub`.
 3. Upload **`PLAYBOOK.md`** to the project's knowledge. This one file is the whole playbook.
-4. Open the project's **custom instructions** and paste everything in `templates/project-instructions.md`. Fill the lines marked `EDIT ME` (your name, your workspace, your link domains).
+4. Open the project's **custom instructions** and paste everything in `templates/project-instructions.md`. Fill the lines marked `EDIT ME` (your name, your sub-account, your link domains).
 5. Optional but recommended: upload your **platform add-on** file (see `01-platform-and-stack.md`, last section) so the AI knows your platform's own tool names and settings.
 
 ## Step 2. Add the connectors
@@ -25,13 +25,13 @@ This page assumes nothing. You have a fresh Claude (or ChatGPT) account and acce
 Go to **Settings, Connectors** and add the ones in `docs/02-connectors.md`. At minimum:
 
 - **App builder connector** (essential): reads and edits app code, compiles, takes pictures, publishes.
-- **Your workspace connector**: reads the account's data and integration status, and runs Connector Hub actions (Meta, Slack, Gmail and more).
+- **Your sub-account connector**: reads the account's data and integration status, and runs Connector Hub actions (Meta, Slack, Gmail and more).
 
 Sign in to each one when Claude asks. Then, in a chat, ask:
 
-> List my connectors and tell me which workspace each one points to.
+> List my connectors and tell me which sub-account each one points to.
 
-This matters. Two connectors can have similar names and point at different workspaces. The check is in `docs/02-connectors.md`, section "Find out where a connector points".
+This matters. Two connectors can have similar names and point at different sub-accounts. The check is in `docs/02-connectors.md`, section "Find out where a connector points".
 
 ## Step 3. Start the first chat
 

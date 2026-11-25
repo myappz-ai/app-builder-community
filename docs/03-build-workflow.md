@@ -35,7 +35,7 @@ Good builders refuse changes until the request is noted for that app in this rou
 Short, plain words. In this order:
 
 1. What now works (screens, saved data, forms).
-2. Which workspace data it reads.
+2. Which sub-account data it reads.
 3. Anything invented as a placeholder.
 4. What is still open, and what the owner must do (approve a query, connect an app, publish).
 
@@ -46,7 +46,7 @@ Template: `templates/handover-template.md`.
 - Publish **only when the user asks** in this conversation, never because work is finished.
 - **live status** says what is live and whether there are unpublished changes.
 - **publish** **without** confirm shows a preview (nothing changes). Show it, get a yes, then **publish** again with confirm.
-- If the answer says workspace data needs approval, nothing went live: the owner approves the listed queries in the app builder's Publish screen, then you publish again.
+- If the answer says sub-account data needs approval, nothing went live: the owner approves the listed queries in the app builder's Publish screen, then you publish again.
 - After publishing, open the live link and confirm the change is there.
 
 ## Rollback
