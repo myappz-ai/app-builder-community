@@ -22,13 +22,11 @@ This playbook needs a **sub-account** on a MyAppz-powered app builder. The sub-a
 
 Without a sub-account an AI can still read this playbook, but it has nothing to build with.
 
-## Which link to use
+## The one link to share
 
-| For | Use | Why |
-|---|---|---|
-| **People** | This page: `https://github.com/myappz-ai/app-builder-community` | Readable docs, templates and the change history |
-| **AI agents** (Claude, ChatGPT, co-work agents) | `https://raw.githubusercontent.com/myappz-ai/app-builder-community/main/PLAYBOOK.md` | One plain-text file with everything; agents read it in one go |
-| **Coding agents** that clone repositories | The whole repository; start with [AGENTS.md](AGENTS.md) | Keeps docs, templates and checks together |
+**https://github.com/myappz-ai/app-builder-community/raw/main/App-Builder-Playbook.pdf**
+
+It downloads the whole playbook as one PDF, always the latest version (rebuilt on every change). People read it; to build, they upload it to a Claude or ChatGPT project and describe the app. Coding agents that clone repositories can start at [AGENTS.md](AGENTS.md).
 
 ---
 
@@ -100,11 +98,13 @@ app-builder-community/
   llms.txt                  short index for AI tools
   CONTRIBUTING.md           how to improve the playbook
   CHANGELOG.md              what changed
-  PLAYBOOK.md               all docs in one file (upload this one; rebuilt automatically on every push)
+  App-Builder-Playbook.pdf  everything in one PDF (the link to share; rebuilt on every push)
+  PLAYBOOK.md               everything in one text file (same content, for agents)
   docs/                     one topic per file, read in order
   templates/                project instructions, checklists, hand-over
   assets/                   example logo mark
   scripts/build_playbook.py rebuilds PLAYBOOK.md from docs/
+  scripts/build_pdf.py      rebuilds App-Builder-Playbook.pdf
   scripts/check_playbook.py fails on secrets, internal names and em dashes
   .github/workflows/        runs both on every push
 ```
