@@ -1610,7 +1610,7 @@ checks, and a starter prompt. No secrets.
 
 The goal: a person writes one paragraph ("I want a family step tracker connected to our iPhones' Health app") and the AI works out everything else itself: which data sources exist, which connectors are needed, how to connect them, what to build, and what each user must do once. The person only answers a question when a wrong guess would break the app, signs in where a provider asks, and approves.
 
-**Wording rule:** the place where outside apps are connected is the **Connector Hub** (in the workspace's settings). Users never see the name of the company behind it. Tool answers may mention that vendor name; never repeat it.
+**Wording rule:** the place where outside apps are connected is the **Connector Hub** (in the sub-account's settings). Users never see the name of the company behind it. Tool answers may mention that vendor name; never repeat it.
 
 ---
 
@@ -1648,7 +1648,7 @@ Run all of these before deciding anything:
 2. **Connector Hub, by need:** **search Connector Hub actions** with plain words for each outside data source ("read daily step count", "list workouts", "sleep score"). The answer lists actions of connected **and not-connected** apps, so it shows what is possible, not only what is on now.
 3. **Connector Hub, by name:** **search Connector Hub actions** with `app` set to likely providers (for health: fitbit, oura, garmin, withings, whoop, strava, google_fit). "No matching actions" means that provider is not in the hub.
 4. **Status:** **connection status** lists every connection of the account (platform integrations and Connector Hub) as connected, needs attention or not connected, each with a `connect_url`.
-5. **Workspace data:** **list workspace data** if the brief touches business data already in the platform.
+5. **Sub-account data:** **list sub-account data** if the brief touches business data already in the platform.
 
 Never decide a source "can't be done" before these searches.
 
@@ -1682,7 +1682,7 @@ For each source of class B or C:
 5. One tiny real read (a **Connector Hub read**) to prove it.
 6. Note it in the hand-over: which account was connected, by whom.
 
-Inside the app itself there is **never** a connect button or link of your own. When something is not connected, the app shows the kit's not-connected text (not-connected message), which tells people to ask the owner. Connecting is the owner's job, done through the steps above or in the workspace's Connector Hub settings.
+Inside the app itself there is **never** a connect button or link of your own. When something is not connected, the app shows the kit's not-connected text (not-connected message), which tells people to ask the owner. Connecting is the owner's job, done through the steps above or in the sub-account's Connector Hub settings.
 
 ### 6 to 8. Build, verify, hand over
 
@@ -1779,7 +1779,7 @@ Every outside app an app talks to (ads, CRM, email, chat, payments, files, weara
 
 | Route | What it is | Who signs in | Where the credential lives | Use when |
 |---|---|---|---|---|
-| **1. Connector Hub** (default) | The workspace's hub holds one connection per outside app; apps call it for reads and changes | The owner, once, on the provider's own page (redirect and back) | Inside the hub, never visible to the app, the AI or chat | The provider is in the hub's catalogue |
+| **1. Connector Hub** (default) | The sub-account's hub holds one connection per outside app; apps call it for reads and changes | The owner, once, on the provider's own page (redirect and back) | Inside the hub, never visible to the app, the AI or chat | The provider is in the hub's catalogue |
 | **2. Direct API** | The app (on the server side) calls the provider's API itself | The owner, through the provider's OAuth page, or by creating a key | A **server-side secret**, never in browser code | The provider is not in the hub, or the hub lacks an endpoint you need |
 | **3. MCP server** | An AI-side connector to the provider (official MCP if one exists) | The person using the AI, in their AI account | In the AI account's connector settings | The **AI** needs the provider while building: reading docs, testing a call, checking an account, diagnosing |
 
@@ -1799,7 +1799,7 @@ Owner asks to connect  →  start a connection (preview, then confirm)
 Rules:
 
 - **Redirect, never collect.** People sign in on the provider's page. Nobody types a password, code or key into chat, the app, or a form you built.
-- **Apps never show their own connect button or link.** When a hub app is not connected, the app shows a calm "not connected" message telling people to ask the owner. Connecting is the owner's job, in the workspace settings or through the flow above.
+- **Apps never show their own connect button or link.** When a hub app is not connected, the app shows a calm "not connected" message telling people to ask the owner. Connecting is the owner's job, in the sub-account settings or through the flow above.
 - **Build with the hub action even before it is connected.** Search the hub's catalogue for the exact action and its fields, write the call, and let the not-connected message show until the owner connects.
 - **Reads run directly; changes need approval.** The owner approves each change action by name (send, post, update). Approving one never allows another. Apps never delete in outside apps.
 - **One default per provider.** Several connections of one provider: the newest is the default; old ones are removed by the owner.
