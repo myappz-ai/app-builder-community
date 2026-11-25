@@ -1,0 +1,7 @@
+# private words list for scripts/check_playbook.py
+.playbook-banned
+# private platform add-ons never go in this repository
+platforms/
+*.private.md
+.env
+.DS_Store
