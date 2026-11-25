@@ -599,7 +599,7 @@ Meta is the hardest data source in a marketing app: big answers, rate limits, ov
 3. **Results = leads + purchases.** Cost per result = spend / results.
 4. **Link clicks are `inline_link_clicks`**, not `clicks` (which counts every click on the ad).
 5. **Budgets and billing amounts come in the smallest unit** (paise, cents). Divide `daily_budget` and activity log amounts by 100.
-6. **Dates are the ad account's timezone.** `date_start` is the day in that timezone; compare with the workspace's timezone days.
+6. **Dates are the ad account's timezone.** `date_start` is the day in that timezone; compare with the sub-account's timezone days.
 7. **A shared ad account:** filter campaigns by name to the projects this app is for, and hide the rest. Example rule: a campaign name containing the event's short code is the event project; names containing the product or brand words are the product project; anything else belongs to another business and is never shown. Keep the words in one function (or a variable the owner can edit), and where possible push the filter to Meta (`campaign.name CONTAIN "<code>"`) so fewer rows come back.
 
 ## Speed and limits
@@ -633,7 +633,7 @@ Meta is the hardest data source in a marketing app: big answers, rate limits, ov
 <!-- file: docs/07-meta-token-runbook.md -->
 # 07. Meta token runbook: a token that never expires
 
-Use this when a dashboard says "Meta's login has expired", or when connecting Meta Ads to a new workspace. It can be followed by a person, or pasted into a browser-capable AI agent that does every click while the person only signs in, clicks Generate and Copy, and pastes into one box.
+Use this when a dashboard says "Meta's login has expired", or when connecting Meta Ads to a new sub-account. It can be followed by a person, or pasted into a browser-capable AI agent that does every click while the person only signs in, clicks Generate and Copy, and pastes into one box.
 
 Background: personal Meta user tokens expire every 60 days. A **system user token** with expiry set to **Never**, made from an app that has the **Create & manage ads with Marketing API** use case, does not. Apps made for other use cases (for example an Instant Game app) can never be used and cause "No permissions available".
 
@@ -661,7 +661,7 @@ You are connecting a business's Meta (Facebook) ad account to its dashboard with
 | `BUSINESS_ID` | Find it yourself: open https://business.facebook.com/settings/system-users, pick `BUSINESS_NAME` in Meta's business picker, and read `business_id=` from the address bar |
 | `APP_NAME` | Use **Ads Connector**, unless the user prefers another name |
 | `SYSTEM_USER` | Whichever system user already exists on the System users page; if none, create one called **Connector Hub** (role Admin) |
-| `PLATFORM_URL` | Your platform's admin link (the user logs in). The Connector Hub is in the workspace's settings |
+| `PLATFORM_URL` | Your platform's admin link (the user logs in). The Connector Hub is in the sub-account's settings |
 | `DASHBOARD` | Ask the user which dashboard/app to check at the end, or open it from the platform after login |
 
 Keep these values only in your working memory for this task. Don't repeat IDs or names back to the user more than needed, and never put them in files you create.
@@ -786,7 +786,7 @@ Keep these values only in your working memory for this task. Don't repeat IDs or
 
 ## 6. Put the token into Connector Hub (2 minutes)
 
-1. Open `PLATFORM_URL` (login → hand-off 1), then open the workspace's **Connector Hub** settings.
+1. Open `PLATFORM_URL` (login → hand-off 1), then open the sub-account's **Connector Hub** settings.
 2. In **Search your apps**, type **Meta Ads**. If a **Meta Ads** card shows under **Connected**, click **Disconnect** on it.
    - This only switches the old (expired) connection off for this page.
    - Without this step, the new token can't be added.
@@ -1001,7 +1001,7 @@ An app with sign-in gets **one admin**: its first person. Ask the owner once whi
 ## Who sees what
 
 - **Staff screens** check `(await app.auth.user())?.role === "admin"` (or `staff`). Use only those two role names for staff.
-- **Workspace data** answers only for signed-in members of the account inside the platform.
+- **Sub-account data** answers only for signed-in members of the account inside the platform.
 - **Ad numbers** from Meta are visible to the app's staff by default. Opening them wider needs the owner's explicit ask (the **access roles setting**).
 - **Platform actions** that touch other people's data run only for staff; plain users act on their own rows only (`NOT_YOURS`, `ROLE_NOT_ALLOWED` otherwise). Show: "Ask the app's admin to let your role do this." / "You can only change your own."
 - **Outside-app actions** are approved one by one by the owner in the app's permissions. Approving one never allows another.
@@ -1029,7 +1029,7 @@ Duplicates break trust faster than anything else in a business app. Every rule b
 | Money in several currencies | Show each on its own; never add them. |
 | Buyers estimated from money | Label it as an estimate ("buyers ≈ money ÷ price"). |
 | Net of GST | Show as a separate line (`÷ 1.18`), keep gross visible. |
-| Timezones | Use the workspace's timezone for "today" and day buckets, so the app matches the platform's own dashboards. Never filter workspace data again in UTC in the browser (it dropped midnight to 5:30 AM IST once). |
+| Timezones | Use the sub-account's timezone for "today" and day buckets, so the app matches the platform's own dashboards. Never filter sub-account data again in UTC in the browser (it dropped midnight to 5:30 AM IST once). |
 
 ## People: one person, one row
 
@@ -1063,7 +1063,7 @@ Duplicates break trust faster than anything else in a business app. Every rule b
 ## Connections: no duplicate connectors
 
 - Several Connector Hub connections of one app (old 60-day Meta tokens): the newest is the default. Keep one, let the owner remove the rest. Never remove the default.
-- Name AI connectors after the workspace they point to.
+- Name AI connectors after the sub-account they point to.
 
 
 ---
@@ -1167,7 +1167,7 @@ cacheSet(key, value) → all three layers (server copy debounced 1.5 s,
 - A tab hidden past the due time catches up when it becomes visible (`visibilitychange`).
 - **Sync now** is always available: it bumps a `refreshKey` that every provider listens to, and rechecks connectors.
 - A popover shows "Last synced" and "Next automatic sync". The header shows "Synced 3:21 pm" with a green dot, or a warning colour and the reason.
-- Workspace data uses **live events**, not timers (`{ live: ["payment.paid"] }`). Use a timer only for sources with no push signal (Meta).
+- Sub-account data uses **live events**, not timers (`{ live: ["payment.paid"] }`). Use a timer only for sources with no push signal (Meta).
 - After a manual sync, one toast with the outcome; automatic syncs stay quiet.
 
 ## Talking to Meta (and any rate-limited service)
