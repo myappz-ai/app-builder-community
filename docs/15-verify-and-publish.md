@@ -15,7 +15,7 @@
 2. **live status**: which version is live, is the new one ready.
 3. **publish** without confirm: the preview of what goes live. Show it.
 4. On yes: **publish** again with confirm.
-5. If workspace data needs approval: nothing went live. The owner opens the app builder, Publish, approves the listed queries (and the app's permissions for outside actions), then publish again.
+5. If sub-account data needs approval: nothing went live. The owner opens the app builder, Publish, approves the listed queries (and the app's permissions for outside actions), then publish again.
 6. Open the live link in a browser and confirm the change. A sign-in is needed, so ask the owner to sign in in the browser pane if the AI is checking.
 
 ## After publishing

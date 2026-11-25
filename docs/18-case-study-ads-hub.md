@@ -14,7 +14,7 @@ Identifiers below are placeholders. Real values belong in the app's variables an
 |---|---|
 | Staff-only app with its own login, opening on the sign-in screen | Ad numbers and buyer lists are internal |
 | Meta through Connector Hub, not the platform's built-in ads module | Outside apps are the default; built-in ads module only on explicit request |
-| Payments, form entries, staff, Zoom attendance from workspace data | They already live in the platform's modules |
+| Payments, form entries, staff, Zoom attendance from sub-account data | They already live in the platform's modules |
 | Calling list, call log, uploaded Zoom reports, screen cache in app data | Nothing in the platform covers them |
 | Date range opens on **Today** | The team checks the day's numbers first |
 | One project shown at a time; campaigns of other businesses hidden | The ad account is shared |
@@ -35,7 +35,7 @@ Identifiers below are placeholders. Real values belong in the app's variables an
 
 **Setup**
 - **Account log:** Meta's change and billing history (7, 30 or 90 days, 20 per page, Load more), money converted from the smallest unit.
-- **Connectors:** only what the app uses (Payment gateway, Zoom, Meta Ads, Slack), the workspace data it reads with live counts, a Zoom staleness warning, Share to Slack.
+- **Connectors:** only what the app uses (Payment gateway, Zoom, Meta Ads, Slack), the sub-account data it reads with live counts, a Zoom staleness warning, Share to Slack.
 
 **Header on every page:** project tag, date range (Today by default), sync status and Sync now, dark mode.
 

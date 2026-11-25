@@ -37,6 +37,6 @@ These apply to every person and every AI working on a micro app.
 
 ## Data use
 
-- An app works for one workspace and never reads or guesses another's data.
+- An app works for one sub-account and never reads or guesses another's data.
 - Never copy numbers from the account into code; the app reads them live.
-- Workspace data in apps is read-only; what users type goes into app data.
+- Sub-account data in apps is read-only; what users type goes into app data.

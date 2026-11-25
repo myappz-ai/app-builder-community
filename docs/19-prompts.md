@@ -8,13 +8,13 @@ Copy these into a chat in the project. Replace anything in `<angle brackets>`.
 Read PLAYBOOK.md in this project fully before doing anything. Follow it as the way we work.
 
 Context:
-- Workspace: <workspace id or name>
+- Sub-account: <sub-account id or name>
 - App (if it exists): <app id or name>. If it does not exist yet, say so and wait for my brief.
 - Team preview links on `<team-domain>`; user links on `<app-domain>` or our domain.
 
 First task: run the connector check from docs/02-connectors.md (the app builder live status, Connector Hub
 connections, one tiny read from each outside app the app uses, platform integrations, and which
-workspace each connector points to). Tell me in plain words what works and what needs fixing.
+sub-account each connector points to). Tell me in plain words what works and what needs fixing.
 Then ask me what to build or change.
 ```
 
@@ -49,7 +49,7 @@ else as it is, show me the preview link. Do not publish.
 ## Add a data source
 
 ```
-Add <source, e.g. Google Ads spend> to <page>. Check whether it is a platform module, workspace data,
+Add <source, e.g. Google Ads spend> to <page>. Check whether it is a platform module, sub-account data,
 or a Connector Hub app. Look at a real answer first, then wire it with all four states and a
 not-connected message. Tell me which approvals I need to give.
 ```

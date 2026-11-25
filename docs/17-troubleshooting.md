@@ -16,7 +16,7 @@ Every problem met while building and running Ads Hub, with its cause and fix.
 | Spend for a day missing | Reading spend and conversions in one filtered call | Two calls (spend, conversions), merged by date and id |
 | Numbers from other businesses appear | Shared ad account | Filter campaigns by name to this app's projects |
 | "Connector Hub is not reachable: the action could not run" | A one-off failure of the status check | Press Check again; only act if it repeats |
-| "no key" from **list Connector Hub connections** | That workspace has no Connector Hub set up | Add the key in that workspace's settings, or use the connector for the right workspace |
+| "no key" from **list Connector Hub connections** | That sub-account has no Connector Hub set up | Add the key in that sub-account's settings, or use the connector for the right sub-account |
 
 ## Platform and the app builder
 
@@ -45,5 +45,5 @@ Every problem met while building and running Ads Hub, with its cause and fix.
 
 | What you see | Cause | Fix |
 |---|---|---|
-| Zoom sessions stop appearing | Platform Zoom sync stopped | Reconnect Zoom in the workspace's integrations, or upload the attendee report CSV |
-| A connector named for one business shows another's data | Connector points to a different workspace | Check `connect_url` in **integration status**; rename connectors |
+| Zoom sessions stop appearing | Platform Zoom sync stopped | Reconnect Zoom in the sub-account's integrations, or upload the attendee report CSV |
+| A connector named for one business shows another's data | Connector points to a different sub-account | Check `connect_url` in **integration status**; rename connectors |
