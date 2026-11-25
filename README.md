@@ -8,7 +8,7 @@ Anyone can pick this up with no history: create a new project in their AI assist
 
 ## Before you start: create your account
 
-This playbook needs a **sub-account** on a MyAppz-powered app builder. The sub-account is your business on the platform: its contacts, payments, forms, apps and connections all live there, and every app you build works inside it.
+This playbook needs a **sub-account** on [Your Platform] (any AI-friendly app builder with sub-accounts). The sub-account is your business on the platform: its contacts, payments, forms, apps and connections all live there, and every app you build works inside it.
 
 - **No account yet?** Ask the agency or partner who shared this link to create your sub-account and turn on the app builder for it.
 - **Have one?** Sign in, open the app builder, and copy your two connector links (the app builder connector and your sub-account connector). Your AI needs both.
@@ -17,9 +17,9 @@ Without a sub-account an AI can still read this playbook, but it has nothing to 
 
 ## The one link to share
 
-**https://github.com/myappz-ai/micro-app-builder/raw/main/App-Builder-Playbook.pdf**
+**https://github.com/myappz-ai/micro-app-builder/releases/latest/download/App-Builder-Playbook.pdf**
 
-It downloads the whole playbook as one PDF, always the latest version (rebuilt on every change). People read it; to build, they upload it to a Claude or ChatGPT project and describe the app. Coding agents that clone repositories can start at [AGENTS.md](AGENTS.md).
+It downloads the whole playbook as one PDF, always from the latest release (built by CI for every release). People read it; to build, they upload it to a Claude or ChatGPT project and describe the app. Coding agents that clone repositories can start at [AGENTS.md](AGENTS.md).
 
 ---
 
@@ -27,12 +27,12 @@ It downloads the whole playbook as one PDF, always the latest version (rebuilt o
 
 | You use | Do this |
 |---|---|
-| **Claude (claude.ai)** | Create a Project. Upload `PLAYBOOK.md` to Project knowledge. Paste `templates/project-instructions.md` into the Project's custom instructions. Add the connectors in `docs/02-connectors.md`. Start a chat with the prompt in `docs/19-prompts.md`. |
+| **Claude (claude.ai)** | Create a Project. Upload [`PLAYBOOK.md`](https://github.com/myappz-ai/micro-app-builder/releases/latest/download/PLAYBOOK.md) (from the latest release) to Project knowledge. Paste `templates/project-instructions.md` into the Project's custom instructions. Add the connectors in `docs/02-connectors.md`. Start a chat with the prompt in `docs/19-prompts.md`. |
 | **ChatGPT (Projects or agent mode)** | Create a Project, upload `PLAYBOOK.md` as a file, paste `templates/project-instructions.md` into the instructions, then the starter prompt. |
 | **Any co-work / browser agent** | Give it `PLAYBOOK.md` and say "Read this, then follow the starter prompt." Agents without app builder tools use the browser steps in each doc. |
 | **A developer** | Read the docs in order. `docs/18-case-study-ads-hub.md` shows every decision in a real app. |
 
-`PLAYBOOK.md` is every file in `docs/` joined into one, so a single upload carries everything. GitHub rebuilds it on every push (or run `python3 scripts/build_playbook.py`).
+`PLAYBOOK.md` is every file in `docs/` joined into one, so a single upload carries everything. CI builds it and the PDF for every release and attaches both to the release (or run `python3 scripts/build_playbook.py` locally). They are not committed to the repository.
 
 ---
 
@@ -91,15 +91,15 @@ micro-app-builder/
   llms.txt                  short index for AI tools
   CONTRIBUTING.md           how to improve the playbook
   CHANGELOG.md              what changed
-  App-Builder-Playbook.pdf  everything in one PDF (the link to share; rebuilt on every push)
-  PLAYBOOK.md               everything in one text file (same content, for agents)
+  SECURITY.md               how to report a problem privately
+  CODE_OF_CONDUCT.md        how we work together
   docs/                     one topic per file, read in order
   templates/                project instructions, checklists, hand-over
   assets/                   example logo mark
   scripts/build_playbook.py rebuilds PLAYBOOK.md from docs/
   scripts/build_pdf.py      rebuilds App-Builder-Playbook.pdf
   scripts/check_playbook.py fails on secrets, internal names and em dashes
-  .github/workflows/        runs both on every push
+  .github/workflows/        runs the check and both builds on every push; attaches the builds to each release
 ```
 
 ## Your platform add-on
@@ -108,4 +108,4 @@ This repository is platform-neutral. To teach the AI your own platform's tool na
 
 ## Contributing and licence
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) and [LICENSE](LICENSE). No passwords, tokens, keys, account ids or customer data belong in this repository; a check on every push enforces it.
+See [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md) and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md). MIT licensed (see [LICENSE](LICENSE)). No passwords, tokens, keys, account ids or customer data belong in this repository; a check on every push enforces it.

@@ -1,8 +1,8 @@
 # For AI agents
 
-You are helping someone build a micro app on a MyAppz-powered app builder. Read in this order:
+You are helping someone build a micro app on [Your Platform] (any AI-friendly app builder with sub-accounts). Read in this order:
 
-1. **[PLAYBOOK.md](PLAYBOOK.md)**: the whole playbook in one file. Read it fully before acting. Plain-text copy: `https://raw.githubusercontent.com/myappz-ai/micro-app-builder/main/PLAYBOOK.md`
+1. **PLAYBOOK.md**: the whole playbook in one file, attached to the latest release: `https://github.com/myappz-ai/micro-app-builder/releases/latest/download/PLAYBOOK.md`. Read it fully before acting. If you cloned the repository, read the files in `docs/` in order instead (same content).
 2. **[templates/project-instructions.md](templates/project-instructions.md)**: the working rules to follow in every chat.
 3. If the person describes an app in one paragraph, follow **[docs/20-one-prompt-to-app.md](docs/20-one-prompt-to-app.md)**.
 

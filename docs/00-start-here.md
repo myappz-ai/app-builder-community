@@ -16,7 +16,7 @@ This page assumes nothing. You have a fresh Claude (or ChatGPT) account and acce
 
 1. In Claude, open **Projects** and click **New project**.
 2. Name it after the app or the work, for example `Micro apps` or `Ads Hub`.
-3. Upload **`PLAYBOOK.md`** to the project's knowledge. This one file is the whole playbook.
+3. Download **`PLAYBOOK.md`** from the latest release (https://github.com/myappz-ai/micro-app-builder/releases/latest/download/PLAYBOOK.md) and upload it to the project's knowledge. This one file is the whole playbook.
 4. Open the project's **custom instructions** and paste everything in `templates/project-instructions.md`. Fill the lines marked `EDIT ME` (your name, your sub-account, your link domains).
 5. Optional but recommended: upload your **platform add-on** file (see `01-platform-and-stack.md`, last section) so the AI knows your platform's own tool names and settings.
 

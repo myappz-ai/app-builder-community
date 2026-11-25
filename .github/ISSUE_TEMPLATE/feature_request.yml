@@ -1,0 +1,20 @@
+name: Playbook improvement
+description: Suggest a new doc, template or a better way to build something.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: The real situation this would help with.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What you propose
+  - type: textarea
+    id: tools
+    attributes:
+      label: Tools or connectors involved
+      description: Use generic names or placeholders such as [Your Platform].

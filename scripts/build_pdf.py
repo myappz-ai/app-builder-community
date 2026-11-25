@@ -62,8 +62,8 @@ cover = f"""
   <div class="bar"></div>
   <div class="meta">
     How to use: upload this PDF to a Claude or ChatGPT project, then describe the app you want.<br>
-    You need a sub-account on a MyAppz-powered app builder and its two connector links.<br>
-    Latest version and source: {REPO}<br>
+    You need a sub-account on [Your Platform] (an AI-friendly app builder) and its two connector links.<br>
+    Latest version: {REPO}/releases/latest<br>
     Edition: {date.today().strftime('%d %b %Y')}
   </div>
 </div>

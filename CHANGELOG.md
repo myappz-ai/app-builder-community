@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.5.0 (2026-11-26)
+
+- License is now MIT for the whole playbook, so partners can rebrand and resell it. Copies keep the copyright and permission notice.
+- PLAYBOOK.md and App-Builder-Playbook.pdf are no longer committed. CI builds them on every push and pull request, and attaches them to each GitHub release. The link to share is now the latest-release download link.
+- White-label: the docs say [Your Platform] instead of a brand name.
+- Added SECURITY, CODE_OF_CONDUCT, issue templates and a pull request template.
+
 ## 1.4.0 (2026-11-25)
 
 - Renamed the repository from app-builder-community to micro-app-builder (old links redirect). Title, links and build scripts updated.

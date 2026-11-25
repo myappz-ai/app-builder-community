@@ -1,10 +1,10 @@
 # Micro App Builder
 
-> A playbook for building production micro apps with any AI assistant on a MyAppz-powered app builder, inside the person's sub-account, from one prompt.
+> A playbook for building production micro apps with any AI assistant on [Your Platform] (any AI-friendly app builder), inside the person's sub-account, from one prompt.
 
 Start with the single-file playbook. It contains every doc and template below.
 
-- [PLAYBOOK.md](https://raw.githubusercontent.com/myappz-ai/micro-app-builder/main/PLAYBOOK.md): everything in one file
+- [PLAYBOOK.md](https://github.com/myappz-ai/micro-app-builder/releases/latest/download/PLAYBOOK.md): everything in one file (latest release)
 - [AGENTS.md](https://raw.githubusercontent.com/myappz-ai/micro-app-builder/main/AGENTS.md): where an AI agent starts
 - [Project instructions](https://raw.githubusercontent.com/myappz-ai/micro-app-builder/main/templates/project-instructions.md): rules for every chat
 - [One prompt to a finished app](https://raw.githubusercontent.com/myappz-ai/micro-app-builder/main/docs/20-one-prompt-to-app.md)

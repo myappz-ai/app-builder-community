@@ -4,8 +4,8 @@ Thank you for improving the playbook. It is used by people and by AI assistants,
 
 ## How to change something
 
-1. Edit the doc in `docs/` (or a template in `templates/`). Never edit `PLAYBOOK.md` by hand.
-2. Optional: rebuild the single file locally with `python3 scripts/build_playbook.py`. GitHub rebuilds and commits it on every push to main.
+1. Edit the doc in `docs/` (or a template in `templates/`). Never commit `PLAYBOOK.md` or the PDF: CI builds them and attaches them to each release.
+2. Optional: rebuild the single file locally with `python3 scripts/build_playbook.py`. CI checks that it builds on every push and pull request.
 3. Run the check: `python3 scripts/check_playbook.py`.
 4. Add a line to `CHANGELOG.md`.
 5. Open a pull request saying what problem the change solves, ideally with the real situation that showed it.
@@ -17,6 +17,10 @@ Thank you for improving the playbook. It is used by people and by AI assistants,
 - No secrets, account ids, emails, phone numbers, customer data or screenshots that show them. Blank them out, do not blur.
 - Always call the integration layer the **Connector Hub**. Never use the name of a vendor behind it.
 - No em dashes.
+- Use `[Your Platform]` where you would name a specific platform.
+- Follow the [Code of Conduct](CODE_OF_CONDUCT.md). Report security problems privately (see [SECURITY.md](SECURITY.md)).
+
+By contributing you agree that your contribution is licensed under the MIT License of this repository.
 - One topic per doc. If a doc grows past about 250 lines, split it.
 - When you add a lesson, add the troubleshooting row too (`docs/17-troubleshooting.md`).
 
