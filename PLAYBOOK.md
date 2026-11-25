@@ -1119,6 +1119,362 @@ If the product is sold outside one country: no country-only phrases ("every rupe
 
 ---
 
+<!-- file: docs/13-sync-performance-caching.md -->
+# 13. Sync, speed and caching
+
+Goal: the screen fills instantly with the last known numbers, fresh numbers replace them quietly, and the app never hammers an outside service.
+
+## Stale-while-revalidate, three layers
+
+```
+cacheGet(key)  → 1. this tab's memory        (instant)
+               → 2. the browser (localStorage, if allowed)
+               → 3. the person's own row in app.db "screen_cache" (owner access)
+                    so a fresh page load on any device starts from their last numbers
+read fresh from the source in the background
+cacheSet(key, value) → all three layers (server copy debounced 1.5 s,
+                       newest 8 keys, under 250 KB, entries older than 7 days ignored)
+```
+
+- Keys include everything that changes the answer: `rows:<project>:<from>:<to>`, `camps`.
+- On a failed refresh with saved numbers on screen: keep them and say when they are from. Never replace real numbers with zeros.
+- Every storage call wrapped in try/catch (storage can be off in the sandbox).
+
+## Automatic sync
+
+- The dashboard reads Meta again **every 15 minutes** while open, measured from the last read **or the last attempt** (so a failure also waits 15 minutes).
+- A tab hidden past the due time catches up when it becomes visible (`visibilitychange`).
+- **Sync now** is always available: it bumps a `refreshKey` that every provider listens to, and rechecks connectors.
+- A popover shows "Last synced" and "Next automatic sync". The header shows "Synced 3:21 pm" with a green dot, or a warning colour and the reason.
+- Workspace data uses **live events**, not timers (`{ live: ["payment.paid"] }`). Use a timer only for sources with no push signal (Meta).
+- After a manual sync, one toast with the outcome; automatic syncs stay quiet.
+
+## Talking to Meta (and any rate-limited service)
+
+- Windows of 7 days, at most 3 in parallel.
+- Pages start at 50 rows and halve when the answer is cut.
+- Finished days cached in memory; today always re-read.
+- Final errors (not connected, rate limited, expired) stop at once, no retry loops.
+- Ask Meta for fewer rows: filter by campaign name and by `spend > 0` on Meta's side.
+- One provider shared by all pages, so switching pages never triggers a new read.
+- Avoid rapid repeated reloads while testing; they cause "too many requests" for everyone using the app.
+
+## Rendering
+
+- No remount on sync: providers update state; pages re-render in place.
+- A thin progress bar under the header while refreshing.
+- Big lists paged ("Load more") rather than loaded whole.
+- The page builder and other heavy parts load only on the screens that need them.
+
+
+---
+
+<!-- file: docs/14-imports-exports.md -->
+# 14. Imports and exports
+
+## Importing a CSV (example: Zoom attendee reports)
+
+Ads Hub's Prospects page accepts the Zoom **webinar attendee report** or the **meeting participants** CSV.
+
+1. **Read the file in the browser** (a file input inside a shadcn Dialog). Detect which report it is from its header rows.
+2. **Parse safely:** quoted fields, commas inside quotes, a byte-order mark at the start, Windows line endings, extra header blocks Zoom adds above the table.
+3. **Clean:**
+   - drop host and panelist rows, and rows with "Attended = No";
+   - sum minutes for the same person (rejoins), matched by email, else name;
+   - fill a missing phone from the CRM by email;
+   - read the topic and date from the report header.
+4. **Name and tag** the session: a name, an event (Event / Workshop / Other) and a date, so it appears on the right page.
+5. **Save** to app data in parts (250 attendees per document, compact arrays) so big webinars still save.
+6. **Offer a sample** report to try or download, so people can test without a real file.
+
+Alternative source: "Pull from Zoom" reads the platform's own Zoom sync (newest 2,000 joins per webinar). Show a staleness warning when the last synced join is older than 7 days, and point to the upload instead.
+
+### Filters after import
+
+Time watched buckets (<10, 10 to 29, 30 to 59, 60 to 119, 120+ minutes), "at least N minutes", and Bought (everyone / not bought yet / already bought, matched by email or phone against payments). Sorted by minutes. "Add N to calling list" adds the filtered people, skipping anyone already on a list.
+
+### Pasting lists
+
+"Name, phone" per line, or one person at a time. Normalise phones the same way as everywhere else (`11-dedup-and-data-quality.md`).
+
+## Exporting a CSV from a sandboxed app
+
+The app runs in a sandboxed frame without `allow-downloads`, so a normal `<a download>` is blocked. The pattern:
+
+```ts
+const body = "﻿" + csvText;                        // BOM so Excel shows ₹ and names correctly
+const sandboxed = window.origin === "null" || window.self !== window.top;
+if (sandboxed) window.open("data:text/csv;charset=utf-8," + encodeURIComponent(body), "_blank");
+else { /* Blob + object URL + <a download> */ }
+toast.success(`Downloading ${name}`, {
+  description: "Nothing saved? Copy the table instead and paste it into Excel or Google Sheets.",
+  action: { label: "Copy", onClick: () => copyText(csvText) },
+});
+```
+
+- Always offer **Copy** as a fallback in the toast.
+- Quote fields that contain commas, quotes or newlines.
+- Confirm with a real user that the file arrives on their computer; browsers differ.
+
+## Copy for WhatsApp
+
+The Daily log has "Copy for WhatsApp": a short text summary of the day (spend, results, cost per result, leads, purchases, clicks, money) using WhatsApp's `*bold*` and line breaks. Copy uses the hidden-textarea method so it works inside the sandbox.
+
+## Share to Slack
+
+Connectors page: a preview of the message, a channel field, and a confirm dialog ("This sends a real message as the connected Slack account"). Runs Slack **send message** through a **Connector Hub change**, shown only when Slack is connected. Handles done, waiting for approval and refused.
+
+
+---
+
+<!-- file: docs/15-verify-and-publish.md -->
+# 15. Verify, publish, roll back
+
+## Before the hand-over
+
+1. **Build check passes** on the last save.
+2. **Every journey walked through the code:** each action has waiting, success and error states.
+3. **Every link** the app sends people to passes a **link check** in this round.
+4. **Pictures at the end:** preview screenshots on desktop, then phone size, for every page and tab people use, with a test user behind the sign-in. Fix every design issue, look again until none are left.
+5. **Feature checklist** gone through item by item: done with a platform module, done with app data, or a named platform gap.
+6. **Numbers sanity:** compare one or two numbers on screen with the source (for example today's Meta spend from a direct Meta **Insights** (`GET /{ad-account}/insights`) read, today's registrations from `form_submissions`). Same timezone, same filters.
+
+## Publish
+
+1. User says publish.
+2. **live status**: which version is live, is the new one ready.
+3. **publish** without confirm: the preview of what goes live. Show it.
+4. On yes: **publish** again with confirm.
+5. If workspace data needs approval: nothing went live. The owner opens the app builder, Publish, approves the listed queries (and the app's permissions for outside actions), then publish again.
+6. Open the live link in a browser and confirm the change. A sign-in is needed, so ask the owner to sign in in the browser pane if the AI is checking.
+
+## After publishing
+
+- Users get the live link on the client domain.
+- Note the live version in the project's handover doc.
+- Watch the Connectors page for a day for anything red.
+
+## Roll back
+
+- **version history**, then **restore a version** to bring an older version back as a new version; check it in preview; publish.
+- Settings changes (name, description, variables, domain) are not versioned with code: write down the old value before changing.
+
+## Approvals the owner must know about
+
+| Thing | Where the owner approves |
+|---|---|
+| A new account-data query shape | the app builder, Publish |
+| An outside-app action (Meta, Slack...) | the app's permissions (also listed in the Publish dialog) |
+| Messages, money, bulk changes run from the app | the platform's approvals inbox (they arrive as `pending_approval`) |
+| WhatsApp login template | Meta approves it (minutes); status via the **template status** check |
+
+
+---
+
+<!-- file: docs/16-security-and-rules.md -->
+# 16. Security and house rules
+
+These apply to every person and every AI working on a micro app.
+
+## Secrets
+
+- **Never generate, copy, display or store tokens, passwords or API keys in chat**, files, code, variables or screenshots.
+- Never ask anyone to paste a token into a chat. The owner pastes it straight into the right box (Connector Hub's Access Token field).
+- Passwords and 2-factor codes are typed by the person, always.
+- Keys an app needs go in **Secrets** (owner only), never in code or public variables.
+- If a token leaks, an admin clicks **Revoke tokens** on the Meta system user and the token runbook (steps 5 to 6) is redone.
+
+## Changing things outside the app
+
+- **Ask before** sending a message, replying, posting, deleting, or changing settings in any connected app (Meta, Slack, Gmail, Google Drive...). One exception: a change the owner explicitly asked for.
+- Never click Revoke, Remove or Delete in Meta. Never remove people, apps, ad accounts or other Connector Hub apps.
+- Never turn off security protections. Never create extra or fake admins to get around an approval rule (Meta's "approved by another admin" cannot be turned off; another real admin approves).
+- Apps never delete data in outside apps (the build check refuses delete, remove and archive actions).
+
+## Privacy and masking
+
+- In anything public or shareable (guides, screenshots, share images, docs like this one): **blank out**, do not blur, names, ids, emails, phone numbers, keys and ad account names.
+- Phones are masked in in-app lists of buyers.
+- Only use Slack or email conversations the requesting person is part of or tagged in. If a connected account belongs to someone else (for example the founder), ignore their private conversations.
+
+## Wording users see
+
+- Always "Connector Hub". Never use the name of the company behind it, even when a tool name or tool answer shows it. "Connect Meta", not "connect to <vendor>".
+- Never name the platform vendor inside a white-labelled app; use the agency's brand only when given.
+- Plain words; no em dashes in materials written for the owner.
+
+## Links
+
+- Team preview links: `<team-domain>`. User links: `<app-domain>` or the custom domain.
+- Never send app users to the platform dashboard or an editor .
+- Never build platform links by hand; use the `public_url` a tool returns.
+
+## Data use
+
+- An app works for one workspace and never reads or guesses another's data.
+- Never copy numbers from the account into code; the app reads them live.
+- Workspace data in apps is read-only; what users type goes into app data.
+
+
+---
+
+<!-- file: docs/17-troubleshooting.md -->
+# 17. Troubleshooting
+
+Every problem met while building and running Ads Hub, with its cause and fix.
+
+## Meta and Connector Hub
+
+| What you see | Cause | Fix |
+|---|---|---|
+| "Meta's login has expired" on the dashboard | The connected token had an end date or was revoked | Make a never-expiring system user token (`07-meta-token-runbook.md`), connect it in Connector Hub |
+| "No permissions available" when generating a token | Wrong Meta app (no Marketing API use case, e.g. an Instant Game app) | Pick the app with "Create & manage ads with Marketing API"; check it has ads_read, ads_management, business_management |
+| "This request must be approved by another admin" | Meta's heightened-security rule for the business | Another full-access admin approves in their Facebook notifications; it cannot be turned off |
+| "Sorry, this content isn't available" on business.facebook.com | Link missing `?business_id=` or signed in to the wrong profile | Add the business id; switch to the admin's profile |
+| "Couldn't refresh from Meta (Too many requests)" | Meta's rate limit, often from many reloads in a few minutes | Wait a minute, then Sync now; avoid rapid reloads |
+| Ad spend shows ₹0 with no error | The system user cannot see the ad account | Assign the ad account to the system user (Manage ad accounts), then regenerate the token |
+| Leads look doubled | Summing several lead action types | Take the largest, never the sum |
+| Spend for a day missing | Reading spend and conversions in one filtered call | Two calls (spend, conversions), merged by date and id |
+| Numbers from other businesses appear | Shared ad account | Filter campaigns by name to this app's projects |
+| "Connector Hub is not reachable: the action could not run" | A one-off failure of the status check | Press Check again; only act if it repeats |
+| "no key" from **list Connector Hub connections** | That workspace has no Connector Hub set up | Add the key in that workspace's settings, or use the connector for the right workspace |
+
+## Platform and the app builder
+
+| What you see | Cause | Fix |
+|---|---|---|
+| Tools that change the app are refused | No **note the request** this round | Call **note the request** with the user's words first |
+| Save refused | Someone else changed the app | Read the file again, redo the edit, save with the new version |
+| **hand over** refused | No the **preview screenshot** tool of the latest version yet, or design issues open | Look, fix the issues, look again |
+| Publish says queries need approval | A new account-data query shape | Owner approves in the app builder, Publish, then publish again |
+| Account-data card shows `NOT_APPROVED` | The live app runs a query that was not approved | Approve it in Publish; no Retry button for this code |
+| Numbers differ from the platform's dashboard by a few hours | Browser filtering in UTC | Use the account's timezone and period presets |
+| Download CSV does nothing | Sandboxed frame blocks downloads | Open via a new window with a data URL; offer Copy |
+| A platform page renders white inside the app | Opened inside the sandboxed frame | Open in a new tab (`target="_blank"`) |
+| Toasts never appear | No `<Toaster />` | Render it once in App |
+| Tooltip crash | No `<TooltipProvider>` | Wrap the app once |
+
+## Sharing and domains
+
+| What you see | Cause | Fix |
+|---|---|---|
+| WhatsApp shows no title, description or thumbnail | Server sends empty OG tags; crawlers do not run JavaScript | Platform must fill OG tags server-side (`12-metadata-branding-sharing.md`) |
+| Custom domain shows "403 Not Available" though Settings says Verified | Domain not routed to the app by the host | Check the domain is attached to this app and the CNAME target matches; ask the platform team |
+| Old name still in the browser tab | App name in Settings not changed | Settings, General, Name |
+
+## Data sources
+
+| What you see | Cause | Fix |
+|---|---|---|
+| Zoom sessions stop appearing | Platform Zoom sync stopped | Reconnect Zoom in the workspace's integrations, or upload the attendee report CSV |
+| A connector named for one business shows another's data | Connector points to a different workspace | Check `connect_url` in **integration status**; rename connectors |
+
+
+---
+
+<!-- file: docs/19-prompts.md -->
+# 19. Prompts
+
+Copy these into a chat in the project. Replace anything in `<angle brackets>`.
+
+## Starter prompt (first chat in a new project)
+
+```
+Read PLAYBOOK.md in this project fully before doing anything. Follow it as the way we work.
+
+Context:
+- Workspace: <workspace id or name>
+- App (if it exists): <app id or name>. If it does not exist yet, say so and wait for my brief.
+- Team preview links on `<team-domain>`; user links on `<app-domain>` or our domain.
+
+First task: run the connector check from docs/02-connectors.md (the app builder live status, Connector Hub
+connections, one tiny read from each outside app the app uses, platform integrations, and which
+workspace each connector points to). Tell me in plain words what works and what needs fixing.
+Then ask me what to build or change.
+```
+
+## One prompt: just describe the app
+
+```
+Build this app: <one paragraph, e.g. "a personal health tracker where everyone in my family tracks
+their steps, connected to the Health app on their iPhones">.
+
+Follow PLAYBOOK.md doc 20: discover every source through the platform and the Connector Hub,
+classify each one, show me the feature checklist and connection plan, connect what is needed
+with sign-in links I open myself, use a device bridge for phone-only data, then build, verify
+and hand over. Ask at most one question.
+```
+
+## Build a new app (step by step)
+
+```
+New app: <one-paragraph brief: who uses it, what they need to see or do>.
+Follow docs/04-product-planning.md: explore the platform first, look at the real data, then show me
+the plan and the feature checklist before building screens. Build backend first, then screens,
+mobile and desktop from the start. Open on the login screen. Hand over when the checklist is done.
+```
+
+## Change something small
+
+```
+In <app>, change <exact thing> to <new thing>. One change only. Read the file first, keep everything
+else as it is, show me the preview link. Do not publish.
+```
+
+## Add a data source
+
+```
+Add <source, e.g. Google Ads spend> to <page>. Check whether it is a platform module, workspace data,
+or a Connector Hub app. Look at a real answer first, then wire it with all four states and a
+not-connected message. Tell me which approvals I need to give.
+```
+
+## Fix wrong numbers
+
+```
+<Card/number> on <page> shows <x> but <source> shows <y> for <period>. Audit before changing:
+read the code that computes it, read the source directly for the same period in the account's
+timezone, explain the difference, then fix it with the smallest change.
+```
+
+## Responsive and design pass
+
+```
+Do a design pass on <app>: look at every page on desktop and phone, list what fails the design
+check in docs/08-ui-ux-design.md, fix them one by one, and show me before/after.
+```
+
+## Publish
+
+```
+Publish <app>. Show me the preview of what goes live first.
+```
+
+## Rename or rebrand
+
+```
+Rename <app> to <new name> everywhere: in-app name, logo letters, sign-in, preloader, the app builder
+name and description. Keep the web address unless I say otherwise. Update the share image.
+```
+
+## Reconnect Meta (expired token)
+
+```
+The dashboard says Meta's login has expired. Follow docs/07-meta-token-runbook.md in my browser.
+I will only sign in, click Generate and Copy, and paste into the box. Never ask me for the token.
+```
+
+## Handover to a new chat or account
+
+```
+Write a complete handover for <app> following templates/handover-template.md: ids and links,
+connectors and their status, structure, data flow, rules, open items, key numbers for sanity
+checks, and a starter prompt. No secrets.
+```
+
+
+---
+
 <!-- file: templates/connector-check.md -->
 # Connector check: <app>, <date, time>
 
