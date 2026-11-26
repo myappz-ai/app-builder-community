@@ -9,3 +9,4 @@ Start with the single-file playbook. It contains every doc and template below.
 - [Project instructions](https://raw.githubusercontent.com/myappz-ai/micro-app-builder/main/templates/project-instructions.md): rules for every chat
 - [One prompt to a finished app](https://raw.githubusercontent.com/myappz-ai/micro-app-builder/main/docs/20-one-prompt-to-app.md)
 - [Integration routes](https://raw.githubusercontent.com/myappz-ai/micro-app-builder/main/docs/21-integration-routes.md)
+- [Use the platform, not the app](https://raw.githubusercontent.com/myappz-ai/micro-app-builder/main/docs/22-use-the-platform-not-the-app.md)

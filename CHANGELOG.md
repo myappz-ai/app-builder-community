@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.6.0 (2026-11-27)
+
+- New doc 22: use the platform, not the app. Do not rebuild preview, versions, storage, secrets, connections or custom domains in the app. Take payments, receipts and post-payment email through the platform; show Paid from the platform's payment mark (with a fallback when the mark is missing); exclude unpaid online orders from revenue, to-ship and stock.
+
 ## 1.5.0 (2026-11-26)
 
 - License is now MIT for the whole playbook, so partners can rebrand and resell it. Copies keep the copyright and permission notice.
