@@ -39,3 +39,6 @@ The definition of done. Every line ends as: **Platform** (done with a platform m
 - [ ] No duplicates (people, counts, actions)
 - [ ] Name, description, metadata set
 - [ ] Hand-over written
+- [ ] No Domain, Versions, Secrets or Connections screens that copy the app builder (`22-use-the-platform-not-the-app.md`)
+- [ ] If the app takes money online: product ids only (no prices sent); payment reference saved; Paid comes from the platform mark; unpaid online orders excluded from revenue, to-ship and stock
+- [ ] Receipts print or save as PDF; payment emails go through a platform workflow or action (show "Waiting for approval", never "sent")

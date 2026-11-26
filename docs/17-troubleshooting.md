@@ -47,3 +47,14 @@ Every problem met while building and running Ads Hub, with its cause and fix.
 |---|---|---|
 | Zoom sessions stop appearing | Platform Zoom sync stopped | Reconnect Zoom in the sub-account's integrations, or upload the attendee report CSV |
 | A connector named for one business shows another's data | Connector points to a different sub-account | Check `connect_url` in **integration status**; rename connectors |
+
+## Payments, receipts and settings
+
+| What you see | Cause | Fix |
+|---|---|---|
+| Payment succeeded in sub-account transactions, but the order still says pending | The platform did not write its payment mark on the linked app-data row (seen on a one-item checkout; a multi-item cart on the same app kept the link) | Show Paid from the platform mark first, then a staff match to the successful transaction, then a live status read on the stored payment reference. Report the missing mark as a platform gap (`22-use-the-platform-not-the-app.md`) |
+| Thank-you page never shows "Paid" after checkout | The app uses hash routes and read `window.location.search`, which is empty | Read the checkout result from the hash query (`#/order/ID?pay=paid`) and keep the payment reference on the order |
+| Unpaid online attempts appear in revenue or "to ship", or they hold stock forever | Abandoned checkouts were treated as placed orders | Exclude unpaid online orders from revenue and to-ship; release their stock after a short window |
+| The app has its own Domain, Secrets or Connect payment screens | Those already exist in the app builder and the sub-account | Remove the duplicate screens and point the owner to Publish (domain), Secrets, and sub-account connections |
+| Receipt email or invoice is shown as "sent" at once | Sending mail is a platform action that may wait for the owner | Show "Waiting for approval" until the status is `done` |
+| Automatic payment emails never go out | The app tried to send them itself, or the workflow was published too widely without a check | Use a platform workflow (draft first). Confirm the email-sending connection, and that the trigger should run for the whole sub-account |

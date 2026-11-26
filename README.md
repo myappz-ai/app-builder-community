@@ -62,6 +62,7 @@ It downloads the whole playbook as one PDF, always from the latest release (buil
 | 19 | [Prompts](docs/19-prompts.md) | Starter prompt and ready prompts for each stage |
 | 20 | [One prompt to a finished app](docs/20-one-prompt-to-app.md) | Describe the app in one paragraph; the AI discovers and connects every source through the Connector Hub, bridges phone-only data, builds and hands over |
 | 21 | [Integration routes](docs/21-integration-routes.md) | Connector Hub first (sign-in redirect and back), direct API with server-side secrets, MCP for the AI; how to choose |
+| 22 | [Use the platform, not the app](docs/22-use-the-platform-not-the-app.md) | Do not rebuild preview, versions, storage, secrets, connections or custom domains in the app; take payments, receipts and post-payment email through the platform |
 
 Templates: [project instructions](templates/project-instructions.md), [feature checklist](templates/feature-checklist.md), [hand-over note](templates/handover-template.md), [connector check](templates/connector-check.md).
 
